@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Athlean">
+<meta name="theme-color" content="#0d0d0d">
+<title>תוכנית אימונים — ATHLEAN-X</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --accent: #e8ff47;
+    --text: #f0f0f0;
+    --muted: #888;
+    --green: #47ff8a;
+    --blue: #47b8ff;
+    --orange: #ff9447;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { height: 100%; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Heebo', sans-serif; font-size: 15px;
+    min-height: 100%; min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bot);
+  }
+  .container { max-width: 600px; margin: 0 auto; padding: 1.25rem 1rem calc(2rem + var(--safe-bot)); }
+
+  .app-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,13,13,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: calc(var(--safe-top) + 0.75rem) 1rem 0.75rem;
+    margin: calc(-1.25rem) -1rem 1.25rem; border-bottom: 1px solid var(--border);
+  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--accent); }
+  .day-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 11px; color: var(--muted); max-width: 200px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .phase-strip { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 1rem; }
+  .phase-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .phase-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; }
+  .phase-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .phase-weeks { margin-right: auto; font-size: 11px; color: var(--accent); background: rgba(232,255,71,0.1); padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.25rem; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 10px 20px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; cursor: pointer; white-space: nowrap; background: transparent; color: var(--muted); transition: all 0.2s; font-family: 'Heebo', sans-serif; min-height: 44px; }
+  .tab:hover { border-color: var(--accent); color: var(--accent); }
+  .tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+
+  .progress-wrap { margin-bottom: 1.25rem; }
+  .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
+
+  .ex-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 1rem; overflow: hidden; transition: border-color 0.2s; }
+  .ex-card.done-card { border-color: rgba(71,255,138,0.25); }
+
+  .ex-image-wrap { width: 100%; height: 220px; overflow: hidden; background: var(--surface2); position: relative; }
+  .ex-image { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.82); transition: filter 0.3s; }
+  .ex-image:hover { filter: brightness(0.95); }
+  .ex-img-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.75)); padding: 32px 14px 12px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .ex-img-eq-tag { font-size: 11px; color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.4); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); }
+  .ex-img-placeholder { width: 100%; height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--surface2); gap: 8px; color: var(--muted); }
+  .ex-img-placeholder-icon { font-size: 36px; opacity: 0.35; }
+  .ex-img-placeholder-text { font-size: 12px; }
+
+  .ex-header { padding: 1rem 1.25rem 0.75rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+  .ex-left { flex: 1; min-width: 0; }
+  .ex-name { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; line-height: 1.1; }
+  .ex-name-en { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; margin: 2px 0 7px; }
+  .muscle-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .mtag { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .mtag.primary { color: var(--accent); border-color: rgba(232,255,71,0.3); background: rgba(232,255,71,0.06); }
+  .card-btns { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+  .card-btn {
+    padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border);
+    font-size: 12px; cursor: pointer; font-family: 'Heebo', sans-serif;
+    transition: all 0.15s; white-space: nowrap; text-align: center;
+    background: transparent; min-height: 36px; min-width: 88px;
+  }
+  .card-btn.info { color: var(--muted); }
+  .card-btn.info:hover, .card-btn.info.open { border-color: var(--blue); color: var(--blue); background: rgba(71,184,255,0.07); }
+  .card-btn.hist { color: var(--muted); }
+  .card-btn.hist:hover, .card-btn.hist.open { border-color: var(--green); color: var(--green); background: rgba(71,255,138,0.07); }
+  .card-btn.swap { color: var(--muted); }
+  .card-btn.swap:hover { border-color: var(--orange); color: var(--orange); background: rgba(255,148,71,0.07); }
+
+  .tip-box { margin: 0 1rem 1rem; padding: 1rem; background: var(--surface2); border-radius: 12px; border-right: 3px solid var(--blue); font-size: 13.5px; line-height: 1.7; color: #ccc; display: none; }
+  .tip-box.open { display: block; }
+  .tip-heading { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: 1px; margin-bottom: 6px; }
+
+  .muscle-svg-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .muscle-svg-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; }
+  .muscle-svg-views { display: flex; gap: 8px; justify-content: center; }
+  .muscle-svg-view { text-align: center; flex: 1; }
+  .muscle-legend { display: flex; gap: 16px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .hist-box { margin: 0 1rem 1rem; padding: 1rem; background: var(--surface2); border-radius: 12px; border-right: 3px solid var(--green); display: none; }
+  .hist-box.open { display: block; }
+  .hist-heading { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 1px; margin-bottom: 10px; }
+  .hist-session { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .hist-session:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .hist-date { font-size: 12px; color: var(--muted); margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+  .hist-date-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .hist-sets { display: flex; flex-wrap: wrap; gap: 5px; }
+  .hist-set { font-size: 12px; padding: 4px 10px; border-radius: 8px; background: rgba(71,255,138,0.08); color: var(--green); border: 1px solid rgba(71,255,138,0.2); }
+  .hist-vol { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .hist-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 6px 0 2px; }
+  .hist-pr { font-size: 10px; background: rgba(232,255,71,0.1); color: var(--accent); border: 1px solid rgba(232,255,71,0.25); padding: 2px 7px; border-radius: 10px; margin-right: 4px; }
+
+  .divider { height: 1px; background: var(--border); margin: 0.25rem 1rem 0.875rem; }
+  .sets-header { display: grid; grid-template-columns: 32px 1fr 1fr 44px; gap: 6px; padding: 0 1.25rem; margin-bottom: 6px; font-size: 11px; color: var(--muted); letter-spacing: 0.5px; text-align: center; }
+  .sets-header span:first-child { text-align: right; }
+  .sets-area { padding: 0 1.25rem 1rem; }
+  .set-row { display: grid; grid-template-columns: 32px 1fr 1fr 44px; gap: 6px; align-items: center; margin-bottom: 7px; }
+  .set-num { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: var(--muted); text-align: right; }
+  .set-input {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 8px; font-size: 16px;
+    text-align: center; color: var(--text); outline: none;
+    font-family: 'Heebo', sans-serif; width: 100%;
+    transition: border-color 0.15s; -webkit-appearance: none; appearance: none;
+  }
+  .set-input:focus { border-color: var(--accent); background: #1f1f1f; }
+  .set-input::placeholder { color: #484848; font-size: 12px; }
+  .done-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: transparent;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto; transition: all 0.2s; flex-shrink: 0;
+  }
+  .done-btn:hover { border-color: var(--green); }
+  .done-btn.done { background: var(--green); border-color: var(--green); }
+  .done-btn.done::after { content: ''; display: block; width: 11px; height: 7px; border-left: 2.5px solid #000; border-bottom: 2.5px solid #000; transform: rotate(-45deg) translateY(-1px); }
+  .add-set-btn { width: 100%; padding: 10px; border: 1px dashed var(--border); border-radius: 10px; background: transparent; color: var(--muted); font-size: 13px; cursor: pointer; font-family: 'Heebo', sans-serif; transition: all 0.15s; margin-top: 2px; min-height: 44px; }
+  .add-set-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .rest-strip { display: flex; align-items: center; gap: 8px; padding: 0 1.25rem 1rem; }
+  .rest-label { font-size: 12px; color: var(--muted); flex: 1; }
+  .rest-timer-val { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--text); min-width: 52px; text-align: center; }
+  .rest-ctrl-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 13px; cursor: pointer; color: var(--muted); font-family: 'Heebo', sans-serif; min-height: 44px; min-width: 64px; }
+  .rest-ctrl-btn:hover { color: var(--text); }
+  .rest-ctrl-btn.active { color: var(--accent); border-color: var(--accent); }
+
+  .finish-btn { width: 100%; padding: 17px; border-radius: 14px; border: none; background: var(--accent); color: #000; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; cursor: pointer; margin-top: 1rem; min-height: 56px; }
+  .finish-btn:hover { opacity: 0.9; }
+
+  .summary-screen { display: none; }
+  .summary-screen.active { display: block; }
+  .workout-screen.hidden { display: none; }
+  .summary-header { text-align: center; padding: 2rem 1rem 1.5rem; }
+  .summary-icon { font-size: 52px; margin-bottom: 0.5rem; }
+  .summary-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 2px; color: var(--accent); }
+  .summary-sub { font-size: 13px; color: var(--muted); margin-top: 5px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem; text-align: center; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--accent); }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .ex-summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+  .ex-sum-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; margin-bottom: 8px; }
+  .set-log { display: inline-block; background: var(--surface2); border-radius: 7px; padding: 3px 10px; margin: 2px; font-size: 12px; color: var(--text); }
+  .next-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text); font-family: 'Heebo', sans-serif; font-size: 14px; cursor: pointer; margin-top: 0.5rem; min-height: 50px; }
+
+  /* ── Progress & Weekly Summary ── */
+  .progress-screen { display: none; }
+  .progress-screen.active { display: block; }
+  .progress-screen .app-header { position: sticky; top: 0; z-index: 100; background: rgba(13,13,13,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: space-between; padding: calc(var(--safe-top) + 0.75rem) 1rem 0.75rem; margin: calc(-1.25rem) -1rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .nav-tabs { display: flex; gap: 6px; margin-bottom: 1.25rem; }
+  .nav-tab { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border); font-size: 13px; cursor: pointer; background: transparent; color: var(--muted); font-family: 'Heebo', sans-serif; min-height: 44px; text-align: center; transition: all 0.2s; }
+  .nav-tab:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; margin-bottom: 1rem; color: var(--accent); }
+  .chart-container { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1rem; margin-bottom: 1.25rem; }
+  .chart-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .chart-canvas { width: 100%; height: 200px; }
+  .chart-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+  .chart-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .chart-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .chart-filter { display: flex; gap: 6px; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 2px; }
+  .chart-filter-btn { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; cursor: pointer; background: transparent; color: var(--muted); font-family: 'Heebo', sans-serif; white-space: nowrap; min-height: 36px; }
+  .chart-filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+  .weekly-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; }
+  .weekly-day-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .weekly-day-badge { font-size: 10px; padding: 3px 8px; border-radius: 12px; background: rgba(232,255,71,0.1); color: var(--accent); }
+  .weekly-ex-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .weekly-ex-row:last-child { border-bottom: none; }
+  .weekly-ex-name { color: var(--text); }
+  .weekly-ex-detail { color: var(--muted); font-size: 12px; }
+  .weekly-stat { display: flex; gap: 16px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .weekly-stat-item { font-size: 12px; color: var(--muted); }
+  .weekly-stat-item span { color: var(--accent); font-weight: 700; }
+  .weekly-empty { text-align: center; padding: 2rem; color: var(--muted); font-size: 14px; }
+  .weekly-total { background: var(--surface); border: 1px solid rgba(232,255,71,0.3); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.25rem; }
+  .weekly-total-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--accent); margin-bottom: 10px; }
+  .weekly-total-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .weekly-total-item { text-align: center; }
+  .weekly-total-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent); }
+  .weekly-total-label { font-size: 11px; color: var(--muted); }
+  .back-btn { display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; color: var(--muted); font-family: 'Heebo', sans-serif; font-size: 13px; cursor: pointer; min-height: 40px; }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Swap Modal ── */
+  .swap-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    display: none; align-items: flex-end; justify-content: center;
+  }
+  .swap-overlay.open { display: flex; }
+  .swap-sheet {
+    background: var(--surface); border-radius: 20px 20px 0 0;
+    width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto;
+    padding: 0 0 calc(1rem + var(--safe-bot));
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .swap-handle { width: 40px; height: 4px; border-radius: 4px; background: #444; margin: 12px auto; }
+  .swap-header { padding: 0.75rem 1.25rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .swap-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; color: var(--orange); }
+  .swap-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; font-family: sans-serif; }
+  .swap-current { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .swap-current-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .swap-current-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--orange); }
+  .swap-list { padding: 0.75rem 1rem; }
+  .swap-list-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; padding: 0 0.25rem; }
+  .swap-alt {
+    display: flex; gap: 12px; align-items: center;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 14px;
+    padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .swap-alt:hover, .swap-alt:active { border-color: var(--orange); background: rgba(255,148,71,0.06); }
+  .swap-alt-img { width: 72px; height: 72px; border-radius: 10px; object-fit: cover; background: #222; flex-shrink: 0; }
+  .swap-alt-info { flex: 1; min-width: 0; }
+  .swap-alt-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 0.5px; }
+  .swap-alt-name-en { font-size: 10px; color: var(--muted); margin-top: 1px; }
+  .swap-alt-eq { font-size: 11px; color: var(--orange); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+  .swap-alt-pick { background: var(--orange); color: #000; border: none; border-radius: 8px; padding: 8px 14px; font-family: 'Heebo', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; min-height: 36px; }
+  .swap-alt-pick:hover { opacity: 0.85; }
+  .swap-revert { width: calc(100% - 2rem); margin: 8px 1rem 0; padding: 12px; border-radius: 10px; border: 1px dashed var(--border); background: transparent; color: var(--muted); font-family: 'Heebo', sans-serif; font-size: 13px; cursor: pointer; min-height: 44px; }
+  .swap-revert:hover { border-color: var(--blue); color: var(--blue); }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="workout-screen" id="workoutScreen">
+    <div class="app-header">
+      <div class="logo">ATHLEAN</div>
+      <div class="day-badge" id="dayLabel"></div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-icon">💪</div>
+      <div><div class="phase-title">שלב 1 — בסיס</div><div class="phase-sub">Hypertrophy Foundation</div></div>
+      <div class="phase-weeks">שבועות 1–4</div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" onclick="switchDay(0)">יום A</button>
+      <button class="tab" onclick="switchDay(1)">יום B</button>
+      <button class="tab" onclick="switchDay(2)">יום C</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-meta"><span id="progressLabel">0 / 0</span><span id="progressPct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div id="exerciseList"></div>
+    <button class="finish-btn" onclick="finishWorkout()">סיים אימון →</button>
+    <button class="next-btn" onclick="showProgressScreen()" style="margin-top:0.5rem">📊 התקדמות וסיכום שבועי</button>
+  </div>
+  <div class="summary-screen" id="summaryScreen">
+    <div class="summary-header"><div class="summary-icon">🔥</div><div class="summary-title">אימון הושלם!</div><div class="summary-sub" id="summaryDate"></div></div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div id="exSummaryList"></div>
+    <button class="finish-btn" onclick="newWorkout()">אימון חדש ↗</button>
+    <button class="next-btn" onclick="newWorkout()">חזרה לתפריט</button>
+  </div>
+</div>
+
+<!-- Progress Screen -->
+<div class="progress-screen" id="progressScreen">
+  <div class="container">
+    <div class="app-header">
+      <button class="back-btn" onclick="hideProgressScreen()">← חזרה</button>
+      <div class="logo">ATHLEAN</div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchProgressTab('chart',this)">📈 גרף התקדמות</button>
+      <button class="nav-tab" onclick="switchProgressTab('weekly',this)">📋 סיכום שבועי</button>
+    </div>
+    <div id="chartTab">
+      <div class="section-title">📈 גרף התקדמות — נפח אימון</div>
+      <div class="chart-filter" id="chartFilter"></div>
+      <div class="chart-container">
+        <div class="chart-label">נפח כולל (ק"ג × חזרות) לאורך זמן</div>
+        <canvas class="chart-canvas" id="progressChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <div class="chart-label">משקל מקסימלי לאורך זמן</div>
+        <canvas class="chart-canvas" id="maxWeightChart"></canvas>
+      </div>
+    </div>
+    <div id="weeklyTab" style="display:none">
+      <div class="section-title">📋 סיכום שבועי</div>
+      <div id="weeklyTotalBox"></div>
+      <div id="weeklySummaryList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Swap Modal -->
+<div class="swap-overlay" id="swapOverlay" onclick="if(event.target===this)closeSwap()">
+  <div class="swap-sheet" id="swapSheet">
+    <div class="swap-handle"></div>
+    <div class="swap-header">
+      <div class="swap-title">🔄 החלף תרגיל</div>
+      <button class="swap-close" onclick="closeSwap()">✕</button>
+    </div>
+    <div class="swap-current">
+      <div class="swap-current-label">תרגיל נוכחי:</div>
+      <div class="swap-current-name" id="swapCurrentName"></div>
+    </div>
+    <div class="swap-list">
+      <div class="swap-list-title">בחר תרגיל חלופי — אותם שרירים:</div>
+      <div id="swapAltList"></div>
+    </div>
+    <button class="swap-revert" id="swapRevertBtn" onclick="revertExercise()" style="display:none">↩ חזור לתרגיל המקורי</button>
+  </div>
+</div>
+
+<script>
+const IMG = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+
+/* ══════════════════════════════
+   EXERCISE LIBRARY
+══════════════════════════════ */
+function ex(id, name, nameEn, equipment, imgPath, svgM, muscles, sets, reps, rest, tip, form) {
+  return { id, name, nameEn, equipment, img: IMG+imgPath, svgMuscles: svgM, muscles, defaultSets: sets, repsTarget: reps, restSec: rest, tip, form };
+}
+
+const SM = {
+  chestP:  [{ids:['f-chest-l','f-chest-r'],type:'p'}],
+  chestS:  [{ids:['f-chest-l','f-chest-r'],type:'s'}],
+  shouldP: [{ids:['f-shoulder-l','f-shoulder-r'],type:'p'}],
+  shouldS: [{ids:['f-shoulder-l','f-shoulder-r'],type:'s'}],
+  shouldAllP: [{ids:['f-shoulder-l','f-shoulder-r','b-rdelt-l','b-rdelt-r'],type:'p'}],
+  triP:    [{ids:['f-tricep-l','f-tricep-r','b-tricep-l','b-tricep-r'],type:'p'}],
+  triS:    [{ids:['f-tricep-l','f-tricep-r','b-tricep-l','b-tricep-r'],type:'s'}],
+  latP:    [{ids:['b-lat-l','b-lat-r'],type:'p'}],
+  latS:    [{ids:['b-lat-l','b-lat-r'],type:'s'}],
+  rhomP:   [{ids:['b-rhomboid'],type:'p'}],
+  rhomS:   [{ids:['b-rhomboid'],type:'s'}],
+  biP:     [{ids:['f-bicep-l','f-bicep-r'],type:'p'}],
+  biS:     [{ids:['f-bicep-l','f-bicep-r'],type:'s'}],
+  foreS:   [{ids:['f-forearm-l','f-forearm-r'],type:'s'}],
+  foreAllS:[{ids:['f-forearm-l','f-forearm-r','b-forearm-l','b-forearm-r'],type:'s'}],
+  trapS:   [{ids:['b-trap'],type:'s'}],
+  rdeltS:  [{ids:['b-rdelt-l','b-rdelt-r'],type:'s'}],
+  quadP:   [{ids:['f-quad-l','f-quad-r'],type:'p'}],
+  quadS:   [{ids:['f-quad-l','f-quad-r'],type:'s'}],
+  gluteP:  [{ids:['b-glute-l','b-glute-r'],type:'p'}],
+  gluteS:  [{ids:['b-glute-l','b-glute-r'],type:'s'}],
+  hamP:    [{ids:['b-ham-l','b-ham-r'],type:'p'}],
+  hamS:    [{ids:['b-ham-l','b-ham-r'],type:'s'}],
+  calfP:   [{ids:['f-calf-l','f-calf-r','b-calf-l','b-calf-r'],type:'p'}],
+  absP:    [{ids:['f-abs'],type:'p'}],
+  lowbackS:[{ids:['b-lowerback'],type:'s'}],
+};
+function sm(...keys) { return keys.flatMap(k => SM[k]); }
+
+/* ── Main Exercises ── */
+const EXERCISES = {
+  bench: ex("bench","לחיצת חזה","Bench Press","ספסל + בר","Barbell_Bench_Press_-_Medium_Grip/0.jpg",
+    sm('chestP','shouldS','triS'), [{name:"חזה",type:"p"},{name:"כתף קדמית",type:"s"},{name:"יד אחורית",type:"s"}],
+    3,"8–10",90,"גשר קטן בגב, כתפיים נמוכות. הורד לשיפולי החזה.",["אחוז רחב מחוץ לכתפיים","הורד 2-3 שניות, דחף בפיצוץ","כיווץ מלא בלמעלה","רגליים שטוחות על הרצפה"]),
+  incline_db: ex("incline_db","לחיצת אינקליין","Incline DB Press","ספסל 30-45° + דמבלים","Incline_Dumbbell_Press/0.jpg",
+    sm('chestP','shouldS','triS'), [{name:"חזה עליון",type:"p"},{name:"כתף קדמית",type:"s"},{name:"יד אחורית",type:"s"}],
+    3,"10–12",75,"זווית 30-45° — לא 60°! stretch מלא למטה.",["ספסל 30-45°","מרפקים זוויתיים כלפי חוץ","stretch למטה, כיווץ למעלה","אל תנגח את הדמבלים"]),
+  ohp: ex("ohp","לחיצת כתפיים","Overhead Press","בר / דמבלים","Barbell_Shoulder_Press/0.jpg",
+    sm('shouldAllP','triS','trapS'), [{name:"כתף — כל הראשים",type:"p"},{name:"יד אחורית",type:"s"},{name:"טרפז",type:"s"}],
+    3,"8–10",90,"דחף קצת לאחור. ליבה מהודקת.",["אחיזה ברוחב כתפיים","ידיים מעל ראש — ישרות","ליבה מהודקת","מרפקים קצת קדימה"]),
+  lateral_raise: ex("lateral_raise","הרמות צדיות","Lateral Raise","דמבלים","Side_Lateral_Raise/0.jpg",
+    sm('shouldP','trapS'), [{name:"כתף צדדית",type:"p"},{name:"טרפז",type:"s"}],
+    3,"12–15",60,"הטה דמבל קדימה 30°. ירידה 3-4 שניות.",["מרפקים כמעט ישרים","עד גובה כתפיים","אל תנדנד","ירידה איטית"]),
+  tricep_pushdown: ex("tricep_pushdown","פשיטת טרייספס","Tricep Pushdown","כבל + V-bar","Triceps_Pushdown/0.jpg",
+    sm('triP'), [{name:"יד אחורית (3 ראשים)",type:"p"}],
+    3,"12–15",60,"מרפקים צמודים לגוף. כיווץ מלא בתחתית.",["עמד זקוף, מרפקים צמודים","דחף מטה — מרפקים לא זזים","כיווץ מלא","שחרור מבוקר"]),
+  pulldown: ex("pulldown","משיכת לאט","Lat Pulldown","מכשיר לאט פולדאון","Wide-Grip_Lat_Pulldown/0.jpg",
+    sm('latP','biS','rdeltS'), [{name:"Lats",type:"p"},{name:"יד קידמית",type:"s"},{name:"Rear Delt",type:"s"}],
+    3,"10–12",90,"נסה 'שבור את הבר' — מפעיל lats יותר.",["אחיזה רחבה","הישען מעט אחורה","משוך לחזה העליון","כווץ שכמות"]),
+  seated_row: ex("seated_row","חתירה בכבל","Seated Cable Row","מכשיר כבל ישיבה","Seated_Cable_Rows/0.jpg",
+    sm('rhomP','latS','biS'), [{name:"גב אמצעי",type:"p"},{name:"Lats",type:"s"},{name:"יד קידמית",type:"s"}],
+    3,"10–12",90,"משוך לטבור. כיווץ שכמות 2 שניות.",["גב ישר","משוך לטבור, מרפקים לגוף","כיווץ שכמות","stretch מלא"]),
+  db_row: ex("db_row","חתירה חד-ידית","Single Arm DB Row","ספסל + דמבל","One-Arm_Dumbbell_Row/0.jpg",
+    sm('latP','rhomS','biS'), [{name:"Lats",type:"p"},{name:"Rhomboids",type:"s"},{name:"יד קידמית",type:"s"}],
+    3,"10–12",75,"משוך מרפק לאחור — לא למעלה.",["ברך ויד נגדיות על ספסל","גב מקביל לרצפה","מרפק לאחור","אל תסובב גוף"]),
+  bicep_curl: ex("bicep_curl","כפיפת בייספס","Barbell Curl","בר / EZ Bar","Barbell_Curl/0.jpg",
+    sm('biP','foreS'), [{name:"יד קידמית",type:"p"},{name:"Brachialis",type:"s"}],
+    3,"10–12",60,"אל תנדנד! ירידה 3 שניות.",["מרפקים צמודים","כף יד פונה מעלה","כיפוף מלא","ירידה 3 שניות"]),
+  hammer_curl: ex("hammer_curl","כפיפת פטיש","Hammer Curl","דמבלים","Alternate_Hammer_Curl/0.jpg",
+    sm('biP','foreAllS'), [{name:"Brachialis",type:"p"},{name:"יד קידמית",type:"s"}],
+    3,"12–15",60,"Neutral grip — אגודל מעלה. מוסיף עובי לזרוע.",["אגודל מעלה","תנועה כמו curl רגיל","אפשר סירוגין","כיווץ מלא"]),
+  squat: ex("squat","סקוואט","Barbell Squat","מסגרת כפיפות + בר","Barbell_Squat/0.jpg",
+    sm('quadP','gluteP','hamS'), [{name:"ארבע-ראשי",type:"p"},{name:"Glutes",type:"p"},{name:"Hamstrings",type:"s"}],
+    4,"8–10",120,"ברכיים ראשונות. חזה גבוה. עד מקביל.",["רגליים ברוחב כתפיים","ברכיים בכיוון אצבעות","ירידה עמוקה","דחף מהעקבים"]),
+  rdl: ex("rdl","דדליפט רומני","Romanian Deadlift","בר / דמבלים","Romanian_Deadlift/0.jpg",
+    sm('hamP','gluteP','lowbackS'), [{name:"Hamstrings",type:"p"},{name:"Glutes",type:"p"},{name:"גב תחתון",type:"s"}],
+    3,"10–12",90,"ירכיים אחורה. בר קרוב לגוף. stretch מלא.",["ברכיים כמעט ישרות","ירכיים אחורה, גב ישר","stretch ב-hamstrings","ירכיים קדימה למעלה"]),
+  leg_press: ex("leg_press","לחיצת רגליים","Leg Press","מכשיר לחיצת רגליים","Leg_Press/0.jpg",
+    sm('quadP','gluteS','hamS'), [{name:"Quadriceps",type:"p"},{name:"Glutes",type:"s"},{name:"Hamstrings",type:"s"}],
+    3,"12–15",75,"רגליים גבוהות = glutes, נמוכות = quads.",["גב צמוד לכסא","90° בברכיים","דחף מעקבים","אל תנעל ברכיים"]),
+  calf_raise: ex("calf_raise","עגלים עמידה","Calf Raise","מכשיר עגלים / מדרגה","Standing_Calf_Raises/0.jpg",
+    sm('calfP'), [{name:"Gastrocnemius",type:"p"},{name:"Soleus",type:"s"}],
+    4,"15–20",45,"stretch מלא בתחתית. כיווץ מלא למעלה.",["stretch — עצור שנייה","כיווץ מלא על קצות אצבעות","איטי ומבוקר","מדרגה = טווח מלא"]),
+  plank: ex("plank","פלאנק + דד באג","Plank + Dead Bug","מזרן","Plank/0.jpg",
+    sm('absP','lowbackS'), [{name:"Core",type:"p"},{name:"גב תחתון",type:"s"}],
+    3,"30-45 שניות",45,"כיווץ, לא כפיפה. ישבן + ליבה יחד.",["גוף ישר","כיווץ ישבן + ליבה","נשימה רגועה","Dead bug: גב שטוח"]),
+
+  /* ── Alternatives ── */
+  db_bench: ex("db_bench","לחיצה עם דמבלים","Dumbbell Bench Press","ספסל + דמבלים","Dumbbell_Bench_Press/0.jpg",
+    sm('chestP','shouldS','triS'), [{name:"חזה",type:"p"},{name:"כתף קדמית",type:"s"},{name:"יד אחורית",type:"s"}],
+    3,"8–10",90,"stretch עמוק יותר מבר. כיווץ בלמעלה.",["שכב שטוח","מרפקים 45°","stretch מלא למטה","כיווץ בלמעלה"]),
+  pushup: ex("pushup","שכיבות שמיכה","Push-Ups","משקל גוף","Push-ups/0.jpg",
+    sm('chestP','shouldS','triS'), [{name:"חזה",type:"p"},{name:"כתף קדמית",type:"s"},{name:"יד אחורית",type:"s"}],
+    3,"AMRAP",60,"ליבה מהודקת. מרפקים 45°.",["ידיים רחב מכתפיים","גוף ישר כחץ","הורד עד שחזה כמעט נוגע","דחף בפיצוץ"]),
+  chest_fly: ex("chest_fly","פרפר עם דמבלים","Dumbbell Fly","ספסל + דמבלים","Dumbbell_Flyes/0.jpg",
+    sm('chestP','shouldS'), [{name:"חזה",type:"p"},{name:"כתף קדמית",type:"s"}],
+    3,"12–15",60,"stretch עמוק. שמור כיפוף קטן במרפקים.",["שכב שטוח","כיפוף קטן במרפקים","פתח לצדדים — stretch","חזור בחיבוק"]),
+
+  incline_barbell: ex("incline_barbell","לחיצת אינקליין בר","Incline Barbell Press","ספסל 30° + בר","Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg",
+    sm('chestP','shouldS','triS'), [{name:"חזה עליון",type:"p"},{name:"כתף קדמית",type:"s"},{name:"יד אחורית",type:"s"}],
+    3,"8–10",90,"30° בדיוק. הורד לעצם הבריח.",["ספסל 30°","אחיזה ברוחב כתפיים+","הורד מבוקר","דחף בפיצוץ"]),
+  landmine_press: ex("landmine_press","לחיצת לנדמיין","Landmine Press","בר בפינה / מתקן","Landmine_Press/0.jpg",
+    sm('chestP','shouldS','triS'), [{name:"חזה עליון",type:"p"},{name:"כתף קדמית",type:"s"},{name:"יד אחורית",type:"s"}],
+    3,"10–12",75,"קדימה ולמעלה. ליבה מהודקת.",["עמד, בר ביד אחת","דחף קדימה ולמעלה","כיווץ בלמעלה","ירידה איטית"]),
+
+  arnold_press: ex("arnold_press","לחיצת ארנולד","Arnold Press","דמבלים","Arnold_Dumbbell_Press/0.jpg",
+    sm('shouldAllP','triS'), [{name:"כתף — כל הראשים",type:"p"},{name:"יד אחורית",type:"s"}],
+    3,"10–12",75,"סיבוב מלא — כל הראשים.",["דמבלים מול הפנים","סובב ודחף מעלה","פתח רחב בלמעלה","ירידה בסיבוב הפוך"]),
+  db_shoulder_press: ex("db_shoulder_press","לחיצת כתף דמבלים","DB Shoulder Press","דמבלים","Dumbbell_Shoulder_Press/0.jpg",
+    sm('shouldAllP','triS'), [{name:"כתף",type:"p"},{name:"יד אחורית",type:"s"}],
+    3,"8–10",90,"טווח תנועה יותר גדול מבר.",["דמבלים ליד האוזניים","דחף מעלה","אל תנעל מרפקים","ירידה מבוקרת"]),
+
+  cable_lateral: ex("cable_lateral","הרמות צדיות בכבל","Cable Lateral Raise","כבל נמוך","Cable_Lateral_Raise/0.jpg",
+    sm('shouldP','trapS'), [{name:"כתף צדדית",type:"p"},{name:"טרפז",type:"s"}],
+    3,"12–15",60,"מתח קבוע לאורך כל הטווח.",["כבל מאחורי הגוף","הרם לגובה כתפיים","ירידה מבוקרת","מתח קבוע"]),
+  face_pull: ex("face_pull","פייס פול","Face Pull","כבל גבוה + חבל","Face_Pull/0.jpg",
+    sm('shouldP','rdeltS','trapS'), [{name:"כתף אחורית",type:"p"},{name:"טרפז",type:"s"}],
+    3,"15–20",60,"מעולה לבריאות כתפיים.",["כבל גבוה","משוך לכיוון הפנים","פתח ידיים לצדדים","כיווץ שכמות"]),
+
+  overhead_tri: ex("overhead_tri","טרייספס מעל הראש","Overhead Tricep Extension","כבל / דמבל","Tricep_Dumbbell_Kickback/0.jpg",
+    sm('triP'), [{name:"יד אחורית — ראש ארוך",type:"p"}],
+    3,"12–15",60,"מותח את הראש הארוך בצורה מקסימלית.",["ידיים מעל הראש","מרפקים ליד האוזניים","stretch מלא למטה","כיווץ מלא למעלה"]),
+  dips: ex("dips","מקבילים","Dips","מקבילים","Dips_-_Triceps_Version/0.jpg",
+    sm('triP','chestS','shouldS'), [{name:"יד אחורית",type:"p"},{name:"חזה",type:"s"},{name:"כתף",type:"s"}],
+    3,"8–12",75,"גוף זקוף = טרייספס. קדימה = חזה.",["ידיים ישרות למעלה","הורד עד 90°","גוף זקוף לטרייספס","דחף למעלה"]),
+
+  chinup: ex("chinup","מתח עם אחיזה הפוכה","Chin-Ups","מתח","Chin-Up/0.jpg",
+    sm('latP','biP'), [{name:"Lats",type:"p"},{name:"יד קידמית",type:"p"}],
+    3,"6–10",90,"אחיזה הפוכה מפעילה בייספס יותר.",["אחיזה צרה, כפות כלפיך","משוך סנטר מעל המוט","ירידה מבוקרת","stretch מלא"]),
+  straight_arm: ex("straight_arm","משיכת כבל ידיים ישרות","Straight Arm Pulldown","כבל גבוה","Straight-Arm_Pulldown/0.jpg",
+    sm('latP'), [{name:"Lats",type:"p"}],
+    3,"12–15",60,"בידוד מושלם ל-Lats.",["עמד מול כבל גבוה","ידיים ישרות","משוך מטה עד הירכיים","כיווץ lats"]),
+
+  barbell_row: ex("barbell_row","חתירה עם בר","Barbell Row","בר","Bent_Over_Barbell_Row/0.jpg",
+    sm('rhomP','latP','biS'), [{name:"גב אמצעי",type:"p"},{name:"Lats",type:"p"},{name:"יד קידמית",type:"s"}],
+    3,"8–10",90,"גב 45°. משוך לטבור.",["כפיפה 45°","אחיזה ברוחב כתפיים","משוך לטבור","כיווץ שכמות"]),
+  tbar_row: ex("tbar_row","חתירת T-Bar","T-Bar Row","T-Bar / לנדמיין","Lying_T-Bar_Row/0.jpg",
+    sm('rhomP','latS','biS'), [{name:"גב אמצעי",type:"p"},{name:"Lats",type:"s"},{name:"יד קידמית",type:"s"}],
+    3,"10–12",90,"אחיזה צרה = יותר גב אמצעי.",["כפיפה על המכשיר","אחיזה צרה","משוך לגוף","כיווץ 2 שניות"]),
+
+  cable_row_single: ex("cable_row_single","חתירה חד-ידית בכבל","Single Arm Cable Row","כבל נמוך","Seated_Cable_Rows/0.jpg",
+    sm('latP','rhomS','biS'), [{name:"Lats",type:"p"},{name:"Rhomboids",type:"s"},{name:"יד קידמית",type:"s"}],
+    3,"10–12",75,"מאפשר טווח יותר גדול.",["כבל נמוך, עמד לצד","משוך מרפק אחורה","סיבוב קל בגוף","כיווץ מלא"]),
+
+  ez_curl: ex("ez_curl","כפיפה עם EZ Bar","EZ Bar Curl","EZ Bar","EZ-Bar_Curl/0.jpg",
+    sm('biP','foreS'), [{name:"יד קידמית",type:"p"},{name:"Brachialis",type:"s"}],
+    3,"10–12",60,"נוח יותר לפרקי הידיים.",["אחיזה בזווית ה-EZ","מרפקים צמודים","כיפוף מלא","ירידה מבוקרת"]),
+  preacher_curl: ex("preacher_curl","כפיפה על ספסל מטיף","Preacher Curl","ספסל מטיף + EZ/דמבל","Preacher_Curl/0.jpg",
+    sm('biP','foreS'), [{name:"יד קידמית — ראש קצר",type:"p"}],
+    3,"10–12",60,"בידוד מושלם. stretch מלא.",["זרועות על ספסל מטיף","ירידה איטית — stretch","כיפוף מלא","אל תנדנד"]),
+
+  rope_curl: ex("rope_curl","כפיפת חבל בכבל","Rope Cable Curl","כבל נמוך + חבל","Cable_Hammer_Curls_-_Rope_Attachment/0.jpg",
+    sm('biP','foreAllS'), [{name:"Brachialis",type:"p"},{name:"יד קידמית",type:"s"}],
+    3,"12–15",60,"מתח קבוע. מעולה לעובי.",["כבל נמוך + חבל","neutral / פיצול בלמעלה","מתח קבוע","כיווץ ופתח"]),
+  reverse_curl: ex("reverse_curl","כפיפה הפוכה","Reverse Curl","בר / EZ","Reverse_Barbell_Curl/0.jpg",
+    sm('biP','foreAllS'), [{name:"Brachioradialis",type:"p"},{name:"יד קידמית",type:"s"}],
+    3,"12–15",60,"מחזק אמות. אחיזה עליונה.",["אחיזה עליונה (כפות מטה)","כיפוף כרגיל","ירידה מבוקרת","אל תכביד מדי"]),
+
+  goblet_squat: ex("goblet_squat","סקוואט גובלט","Goblet Squat","דמבל / קטלבל","Goblet_Squat/0.jpg",
+    sm('quadP','gluteP','hamS'), [{name:"ארבע-ראשי",type:"p"},{name:"Glutes",type:"p"},{name:"Hamstrings",type:"s"}],
+    3,"10–12",90,"מעולה לטכניקה ולעומק.",["דמבל מול החזה","רגליים רחב","ירידה עמוקה","חזה גבוה"]),
+  front_squat: ex("front_squat","סקוואט קדמי","Front Squat","בר","Front_Barbell_Squat/0.jpg",
+    sm('quadP','gluteP','hamS'), [{name:"ארבע-ראשי",type:"p"},{name:"Glutes",type:"p"}],
+    4,"8–10",120,"דגש על quads. חזה גבוה חובה.",["בר על הכתפיים הקדמיות","מרפקים גבוהים","ירידה עמוקה","גב ישר"]),
+  hack_squat: ex("hack_squat","האק סקוואט","Hack Squat","מכשיר האק","Hack_Squat/0.jpg",
+    sm('quadP','gluteP','hamS'), [{name:"ארבע-ראשי",type:"p"},{name:"Glutes",type:"p"}],
+    3,"10–12",90,"בטוח לגב. דגש quads.",["גב צמוד לריפוד","רגליים נמוך = quads","ירידה מבוקרת","אל תנעל ברכיים"]),
+
+  stiff_dl: ex("stiff_dl","דדליפט רגליים ישרות","Stiff Leg Deadlift","בר","Stiff-Legged_Barbell_Deadlift/0.jpg",
+    sm('hamP','gluteP','lowbackS'), [{name:"Hamstrings",type:"p"},{name:"Glutes",type:"p"},{name:"גב תחתון",type:"s"}],
+    3,"10–12",90,"דומה ל-RDL, ברכיים יותר ישרות.",["ברכיים נעולות כמעט","כפיפה מהמותן","stretch מקסימלי","חזרה איטית"]),
+  good_morning: ex("good_morning","גוד מורנינג","Good Morning","בר","Good_Morning/0.jpg",
+    sm('hamP','gluteP','lowbackS'), [{name:"Hamstrings",type:"p"},{name:"Glutes",type:"p"},{name:"גב תחתון",type:"s"}],
+    3,"10–12",75,"בר על הגב. כפיפה מהמותן.",["בר על הגב כמו סקוואט","כפיפה קדימה מהמותן","ברכיים כמעט ישרות","חזרה בכיווץ glutes"]),
+
+  bulgarian: ex("bulgarian","בולגרי ספליט סקוואט","Bulgarian Split Squat","ספסל + דמבלים","Single_Leg_Squat/0.jpg",
+    sm('quadP','gluteP','hamS'), [{name:"Quadriceps",type:"p"},{name:"Glutes",type:"p"},{name:"Hamstrings",type:"s"}],
+    3,"10–12",75,"חד-צדדי. שיווי משקל + כוח.",["רגל אחורית על ספסל","ירידה עד 90° בברך","דחף מרגל קדמית","גוף ישר"]),
+
+  seated_calf: ex("seated_calf","עגלים ישיבה","Seated Calf Raise","מכשיר עגלים ישיבה","Seated_Calf_Raise/0.jpg",
+    sm('calfP'), [{name:"Soleus",type:"p"},{name:"Gastrocnemius",type:"s"}],
+    4,"15–20",45,"דגש על Soleus (ברכיים כפופות).",["ברכיים כפופות 90°","stretch מלא","כיווץ מלא","תנועה מלאה"]),
+
+  ab_wheel: ex("ab_wheel","גלגל בטן","Ab Wheel Rollout","גלגל בטן","Ab_Roller/0.jpg",
+    sm('absP','lowbackS'), [{name:"Core",type:"p"},{name:"גב תחתון",type:"s"}],
+    3,"8–12",60,"תרגיל ליבה מתקדם.",["ברכיים על הרצפה","גלול קדימה — stretch","חזור בכיווץ ליבה","אל תקמר גב"]),
+  hanging_raise: ex("hanging_raise","הרמת רגליים בתלייה","Hanging Leg Raise","מתח","Hanging_Leg_Raise/0.jpg",
+    sm('absP'), [{name:"Core / בטן תחתון",type:"p"}],
+    3,"10–15",60,"מעולה לבטן תחתון.",["תלה על מתח","הרם ברכיים / רגליים","כיווץ בטן בלמעלה","ירידה מבוקרת"]),
+};
+
+/* ── Alternatives Map ── */
+const ALTS = {
+  bench: ['db_bench','pushup','chest_fly'],
+  incline_db: ['incline_barbell','landmine_press','db_bench'],
+  ohp: ['arnold_press','db_shoulder_press'],
+  lateral_raise: ['cable_lateral','face_pull'],
+  tricep_pushdown: ['overhead_tri','dips'],
+  overhead_tri: ['tricep_pushdown','dips'],
+  pulldown: ['chinup','straight_arm'],
+  seated_row: ['barbell_row','tbar_row'],
+  db_row: ['cable_row_single','barbell_row'],
+  bicep_curl: ['ez_curl','preacher_curl'],
+  hammer_curl: ['rope_curl','reverse_curl'],
+  squat: ['goblet_squat','front_squat','hack_squat'],
+  rdl: ['stiff_dl','good_morning'],
+  leg_press: ['bulgarian','hack_squat','goblet_squat'],
+  calf_raise: ['seated_calf'],
+  plank: ['ab_wheel','hanging_raise'],
+};
+
+/* ── Days (mutable — swaps change these) ── */
+const DAYS_ORIGINAL = [
+  { name:"יום A — חזה + כתפיים + יד אחורית", exIds:["bench","incline_db","ohp","lateral_raise","tricep_pushdown","overhead_tri"] },
+  { name:"יום B — גב + יד קידמית", exIds:["pulldown","seated_row","db_row","bicep_curl","hammer_curl"] },
+  { name:"יום C — רגליים + ליבה", exIds:["squat","rdl","leg_press","calf_raise","plank"] },
+];
+
+let DAYS = JSON.parse(JSON.stringify(DAYS_ORIGINAL));
+
+// Load saved swaps
+function loadSwaps() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('athlean_swaps') || '{}');
+    Object.keys(saved).forEach(key => {
+      const [di, ei] = key.split('_').map(Number);
+      if (DAYS[di] && DAYS[di].exIds[ei] !== undefined && EXERCISES[saved[key]]) {
+        DAYS[di].exIds[ei] = saved[key];
+      }
+    });
+  } catch(e) {}
+}
+
+function saveSwap(dayIdx, exIdx, newId) {
+  const saved = JSON.parse(localStorage.getItem('athlean_swaps') || '{}');
+  const origId = DAYS_ORIGINAL[dayIdx].exIds[exIdx];
+  if (newId === origId) {
+    delete saved[`${dayIdx}_${exIdx}`];
+  } else {
+    saved[`${dayIdx}_${exIdx}`] = newId;
+  }
+  localStorage.setItem('athlean_swaps', JSON.stringify(saved));
+}
+
+function getDayExercises(dayIdx) {
+  return DAYS[dayIdx].exIds.map(id => EXERCISES[id]);
+}
+
+/* ══════════════════════════════
+   STATE
+══════════════════════════════ */
+let currentDay = 0, setsData = {}, timerIntervals = {};
+let swapDayIdx = -1, swapExIdx = -1;
+
+function buildKey(di, exId, si) { return `d${di}_${exId}_s${si}`; }
+
+function initSetsData() {
+  DAYS.forEach((day, di) => {
+    day.exIds.forEach(exId => {
+      const ex = EXERCISES[exId];
+      if (!ex) return;
+      for (let s = 0; s < ex.defaultSets; s++) {
+        const k = buildKey(di, exId, s);
+        if (!setsData[k]) setsData[k] = { weight:'', reps:'', done:false };
+      }
+    });
+  });
+}
+
+/* ══════════════════════════════
+   SWAP
+══════════════════════════════ */
+function openSwap(dayIdx, exIdx) {
+  swapDayIdx = dayIdx; swapExIdx = exIdx;
+  const currentId = DAYS[dayIdx].exIds[exIdx];
+  const origId = DAYS_ORIGINAL[dayIdx].exIds[exIdx];
+  const origEx = EXERCISES[origId];
+  const curEx = EXERCISES[currentId];
+
+  document.getElementById('swapCurrentName').textContent = `${curEx.name} (${curEx.nameEn})`;
+
+  // Build alternatives: original exercise's alternatives + the original itself if swapped
+  const altIds = (ALTS[origId] || []).filter(id => id !== currentId);
+  if (currentId !== origId && !altIds.includes(origId)) altIds.unshift(origId);
+
+  const list = document.getElementById('swapAltList');
+  list.innerHTML = altIds.map(altId => {
+    const a = EXERCISES[altId];
+    if (!a) return '';
+    const isOrig = altId === origId && currentId !== origId;
+    return `
+      <div class="swap-alt" onclick="doSwap('${altId}')">
+        <img class="swap-alt-img" src="${a.img}" alt="${a.nameEn}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 72 72%22><rect fill=%22%23222%22 width=%2272%22 height=%2272%22/><text x=%2236%22 y=%2240%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2224%22>🏋️</text></svg>'">
+        <div class="swap-alt-info">
+          <div class="swap-alt-name">${a.name}${isOrig?' (מקורי)':''}</div>
+          <div class="swap-alt-name-en">${a.nameEn}</div>
+          <div class="swap-alt-eq">🔧 ${a.equipment}</div>
+        </div>
+        <button class="swap-alt-pick" onclick="event.stopPropagation();doSwap('${altId}')">בחר</button>
+      </div>`;
+  }).join('');
+
+  // Show revert button if currently swapped
+  document.getElementById('swapRevertBtn').style.display = currentId !== origId ? 'block' : 'none';
+
+  document.getElementById('swapOverlay').classList.add('open');
+}
+
+function closeSwap() {
+  document.getElementById('swapOverlay').classList.remove('open');
+}
+
+function doSwap(newId) {
+  DAYS[swapDayIdx].exIds[swapExIdx] = newId;
+  saveSwap(swapDayIdx, swapExIdx, newId);
+  // Init sets for new exercise
+  const ex = EXERCISES[newId];
+  for (let s = 0; s < ex.defaultSets; s++) {
+    const k = buildKey(swapDayIdx, newId, s);
+    if (!setsData[k]) setsData[k] = { weight:'', reps:'', done:false };
+  }
+  closeSwap();
+  renderExercises();
+}
+
+function revertExercise() {
+  const origId = DAYS_ORIGINAL[swapDayIdx].exIds[swapExIdx];
+  doSwap(origId);
+}
+
+/* ══════════════════════════════
+   HISTORY
+══════════════════════════════ */
+function saveHistory() {
+  const exercises = {};
+  DAYS[currentDay].exIds.forEach(exId => {
+    const sets = [];
+    for (let i = 0; i < 20; i++) {
+      const d = setsData[buildKey(currentDay, exId, i)];
+      if (d && (d.weight !== '' || d.reps !== '')) sets.push({ w:parseFloat(d.weight)||0, r:parseInt(d.reps)||0, done:d.done });
+    }
+    if (sets.length) exercises[exId] = sets;
+  });
+  const now = new Date();
+  const stored = JSON.parse(localStorage.getItem('athlean_history') || '{"sessions":[]}');
+  stored.sessions.unshift({ id:Date.now(), date:now.toISOString().split('T')[0],
+    dateDisplay:now.toLocaleDateString('he-IL',{weekday:'short',day:'numeric',month:'short',year:'numeric'}),
+    dayIdx:currentDay, exercises });
+  if (stored.sessions.length > 60) stored.sessions = stored.sessions.slice(0,60);
+  localStorage.setItem('athlean_history', JSON.stringify(stored));
+}
+
+function getExHistory(dayIdx, exId, limit=5) {
+  try {
+    return JSON.parse(localStorage.getItem('athlean_history')||'{"sessions":[]}').sessions
+      .filter(s => s.dayIdx===dayIdx && s.exercises && s.exercises[exId]).slice(0,limit);
+  } catch(e) { return []; }
+}
+
+function toggleHistory(exId) {
+  const box = document.getElementById(`hist_${exId}`);
+  const btn = document.getElementById(`histBtn_${exId}`);
+  const isOpen = box.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  btn.textContent = isOpen ? 'היסטוריה ▲' : 'היסטוריה ▼';
+  if (!isOpen) return;
+  const sessions = getExHistory(currentDay, exId);
+  const content = document.getElementById(`histContent_${exId}`);
+  if (!sessions.length) { content.innerHTML = '<div class="hist-empty">עדיין אין היסטוריה 🏋️</div>'; return; }
+  let maxW = 0;
+  sessions.forEach(s => s.exercises[exId].forEach(set => { if(set.w>maxW) maxW=set.w; }));
+  content.innerHTML = sessions.map((s,si) => {
+    const sets = s.exercises[exId];
+    const vol = sets.reduce((a,set)=>a+set.w*set.r,0);
+    const best = Math.max(...sets.map(set=>set.w));
+    return `<div class="hist-session"><div class="hist-date"><div class="hist-date-dot"></div>${s.dateDisplay}${si===0&&sessions.length>1&&best===maxW?'<span class="hist-pr">🏆 שיא</span>':''}</div>
+      <div class="hist-sets">${sets.map((set,i)=>`<span class="hist-set">${i+1}: ${set.w}ק"ג×${set.r}</span>`).join('')}</div>
+      ${vol>0?`<div class="hist-vol">נפח: ${vol.toLocaleString()} ק"ג</div>`:''}</div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════
+   MUSCLE SVG
+══════════════════════════════ */
+function buildMuscleSVG(svgMuscles) {
+  const C={p:'#e8ff47',s:'#47b8ff',off:'#2a2a2a'};
+  const cm={};
+  svgMuscles.forEach(g=>g.ids.forEach(id=>{if(g.type==='p'||!cm[id])cm[id]=C[g.type]}));
+  const c=id=>cm[id]||C.off, o=id=>cm[id]?'0.88':'0.28';
+  const B=`<circle cx="50" cy="13" r="12" fill="#222" stroke="#3a3a3a" stroke-width="1"/><rect x="44" y="24" width="12" height="9" fill="#222"/><path d="M29 33Q22 33 17 38Q13 44 13 56L15 76 21 91 33 95 33 76Q41 74 50 74 59 74 67 76L67 95 79 91 85 76 87 56Q87 44 83 38 78 33 71 33 65 28 50 26 35 28 29 33Z" fill="#222" stroke="#3a3a3a" stroke-width=".8"/><rect x="7" y="34" width="11" height="36" rx="5" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="82" y="34" width="11" height="36" rx="5" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="8" y="71" width="10" height="26" rx="4" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="82" y="71" width="10" height="26" rx="4" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="30" y="95" width="16" height="40" rx="6" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="54" y="95" width="16" height="40" rx="6" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="31" y="137" width="13" height="32" rx="5" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="56" y="137" width="13" height="32" rx="5" fill="#222" stroke="#3a3a3a" stroke-width=".5"/>`;
+  return `<div class="muscle-svg-section"><div class="muscle-svg-title">שרירים מעורבים</div><div class="muscle-svg-views"><div class="muscle-svg-view"><svg viewBox="0 0 100 210" width="100%" style="max-width:130px">${B}<ellipse cx="37" cy="50" rx="12" ry="9" fill="${c('f-chest-l')}" opacity="${o('f-chest-l')}"/><ellipse cx="63" cy="50" rx="12" ry="9" fill="${c('f-chest-r')}" opacity="${o('f-chest-r')}"/><ellipse cx="16" cy="40" rx="9" ry="8" fill="${c('f-shoulder-l')}" opacity="${o('f-shoulder-l')}"/><ellipse cx="84" cy="40" rx="9" ry="8" fill="${c('f-shoulder-r')}" opacity="${o('f-shoulder-r')}"/><rect x="8" y="36" width="10" height="24" rx="4" fill="${c('f-bicep-l')}" opacity="${o('f-bicep-l')}"/><rect x="82" y="36" width="10" height="24" rx="4" fill="${c('f-bicep-r')}" opacity="${o('f-bicep-r')}"/><rect x="7" y="37" width="7" height="22" rx="3" fill="${c('f-tricep-l')}" opacity="${o('f-tricep-l')}"/><rect x="86" y="37" width="7" height="22" rx="3" fill="${c('f-tricep-r')}" opacity="${o('f-tricep-r')}"/><rect x="9" y="72" width="9" height="22" rx="3" fill="${c('f-forearm-l')}" opacity="${o('f-forearm-l')}"/><rect x="82" y="72" width="9" height="22" rx="3" fill="${c('f-forearm-r')}" opacity="${o('f-forearm-r')}"/><rect x="38" y="58" width="24" height="28" rx="4" fill="${c('f-abs')}" opacity="${o('f-abs')}"/><rect x="31" y="96" width="14" height="37" rx="5" fill="${c('f-quad-l')}" opacity="${o('f-quad-l')}"/><rect x="55" y="96" width="14" height="37" rx="5" fill="${c('f-quad-r')}" opacity="${o('f-quad-r')}"/><rect x="32" y="138" width="11" height="28" rx="4" fill="${c('f-calf-l')}" opacity="${o('f-calf-l')}"/><rect x="57" y="138" width="11" height="28" rx="4" fill="${c('f-calf-r')}" opacity="${o('f-calf-r')}"/><text x="50" y="207" text-anchor="middle" font-size="8.5" fill="#555" font-family="Heebo,sans-serif">קדמי</text></svg></div><div class="muscle-svg-view"><svg viewBox="0 0 100 210" width="100%" style="max-width:130px">${B}<path d="M33 33Q50 29 67 33 70 43 50 49 30 43 33 33Z" fill="${c('b-trap')}" opacity="${o('b-trap')}"/><ellipse cx="16" cy="40" rx="9" ry="8" fill="${c('b-rdelt-l')}" opacity="${o('b-rdelt-l')}"/><ellipse cx="84" cy="40" rx="9" ry="8" fill="${c('b-rdelt-r')}" opacity="${o('b-rdelt-r')}"/><path d="M27 43Q17 57 18 86L33 90 33 76 29 50Z" fill="${c('b-lat-l')}" opacity="${o('b-lat-l')}"/><path d="M73 43Q83 57 82 86L67 90 67 76 71 50Z" fill="${c('b-lat-r')}" opacity="${o('b-lat-r')}"/><path d="M35 50L50 46 65 50 64 65 50 68 36 65Z" fill="${c('b-rhomboid')}" opacity="${o('b-rhomboid')}"/><rect x="37" y="67" width="26" height="22" rx="4" fill="${c('b-lowerback')}" opacity="${o('b-lowerback')}"/><rect x="8" y="36" width="10" height="26" rx="5" fill="${c('b-tricep-l')}" opacity="${o('b-tricep-l')}"/><rect x="82" y="36" width="10" height="26" rx="5" fill="${c('b-tricep-r')}" opacity="${o('b-tricep-r')}"/><rect x="9" y="72" width="9" height="22" rx="3" fill="${c('b-forearm-l')}" opacity="${o('b-forearm-l')}"/><rect x="82" y="72" width="9" height="22" rx="3" fill="${c('b-forearm-r')}" opacity="${o('b-forearm-r')}"/><ellipse cx="39" cy="95" rx="13" ry="10" fill="${c('b-glute-l')}" opacity="${o('b-glute-l')}"/><ellipse cx="61" cy="95" rx="13" ry="10" fill="${c('b-glute-r')}" opacity="${o('b-glute-r')}"/><rect x="31" y="101" width="14" height="34" rx="5" fill="${c('b-ham-l')}" opacity="${o('b-ham-l')}"/><rect x="55" y="101" width="14" height="34" rx="5" fill="${c('b-ham-r')}" opacity="${o('b-ham-r')}"/><rect x="32" y="138" width="11" height="28" rx="4" fill="${c('b-calf-l')}" opacity="${o('b-calf-l')}"/><rect x="57" y="138" width="11" height="28" rx="4" fill="${c('b-calf-r')}" opacity="${o('b-calf-r')}"/><text x="50" y="207" text-anchor="middle" font-size="8.5" fill="#555" font-family="Heebo,sans-serif">אחורי</text></svg></div></div><div class="muscle-legend"><div class="legend-item"><div class="legend-dot" style="background:#e8ff47"></div>ראשי</div><div class="legend-item"><div class="legend-dot" style="background:#47b8ff"></div>משני</div></div></div>`;
+}
+
+/* ══════════════════════════════
+   CARD BUILDER
+══════════════════════════════ */
+function buildExCard(ex, exIdx) {
+  const card = document.createElement('div');
+  card.className = 'ex-card'; card.id = `card_${ex.id}`;
+
+  const origId = DAYS_ORIGINAL[currentDay].exIds[exIdx];
+  const isSwapped = ex.id !== origId;
+
+  card.innerHTML = `
+    <div class="ex-image-wrap">
+      <img class="ex-image" src="${ex.img}" alt="${ex.nameEn}" onerror="this.parentElement.innerHTML='<div class=\\'ex-img-placeholder\\'><div class=\\'ex-img-placeholder-icon\\'>🏋️</div><div class=\\'ex-img-placeholder-text\\'>${ex.nameEn}</div></div>'">
+      <div class="ex-img-overlay"><span class="ex-img-eq-tag">🔧 ${ex.equipment}</span></div>
+    </div>
+    <div class="ex-header">
+      <div class="ex-left">
+        <div class="ex-name">${ex.name}${isSwapped?' 🔄':''}</div>
+        <div class="ex-name-en">${ex.nameEn}</div>
+        <div class="muscle-tags">${ex.muscles.map(m=>`<span class="mtag${m.type==='p'?' primary':''}">${m.name}</span>`).join('')}</div>
+      </div>
+      <div class="card-btns">
+        <button class="card-btn swap" onclick="openSwap(${currentDay},${exIdx})">🔄 החלף</button>
+        <button class="card-btn info" id="infoBtn_${ex.id}" onclick="toggleTip('${ex.id}')">איך לבצע ▼</button>
+        <button class="card-btn hist" id="histBtn_${ex.id}" onclick="toggleHistory('${ex.id}')">היסטוריה ▼</button>
+      </div>
+    </div>`;
+
+  const tipBox = document.createElement('div');
+  tipBox.className = 'tip-box'; tipBox.id = `tip_${ex.id}`;
+  tipBox.innerHTML = `<div class="tip-heading">🎯 Tip</div><div style="margin-bottom:10px">${ex.tip}</div><div class="tip-heading">✅ ביצוע נכון</div>${ex.form.map((f,i)=>`<div style="margin-bottom:4px"><span style="color:var(--accent);font-weight:700">${i+1}.</span> ${f}</div>`).join('')}${buildMuscleSVG(ex.svgMuscles)}`;
+  card.appendChild(tipBox);
+
+  const histBox = document.createElement('div');
+  histBox.className = 'hist-box'; histBox.id = `hist_${ex.id}`;
+  histBox.innerHTML = `<div class="hist-heading">📅 היסטוריה</div><div id="histContent_${ex.id}"></div>`;
+  card.appendChild(histBox);
+
+  card.appendChild(Object.assign(document.createElement('div'),{className:'divider'}));
+
+  const sh = document.createElement('div');
+  sh.className = 'sets-header';
+  sh.innerHTML = '<span>סט</span><span>ק"ג</span><span>חזרות</span><span></span>';
+  card.appendChild(sh);
+
+  const sa = document.createElement('div');
+  sa.className = 'sets-area'; sa.id = `sets_${ex.id}`;
+  let numSets = ex.defaultSets;
+  for (let i=0;i<15;i++) { if(setsData[buildKey(currentDay,ex.id,i)]!==undefined) numSets=i+1; else if(i>=ex.defaultSets) break; }
+  for (let s=0;s<numSets;s++) sa.appendChild(buildSetRow(ex,s));
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-set-btn'; addBtn.textContent = '+ הוסף סט';
+  addBtn.onclick = () => addSet(ex);
+  sa.appendChild(addBtn);
+  card.appendChild(sa);
+
+  const rest = document.createElement('div');
+  rest.className = 'rest-strip';
+  rest.innerHTML = `<span class="rest-label">מנוחה: ${ex.restSec}s</span><span class="rest-timer-val" id="rest_${ex.id}">0:00</span><button class="rest-ctrl-btn" id="restBtn_${ex.id}" onclick="toggleRest('${ex.id}',${ex.restSec})">התחל</button>`;
+  card.appendChild(rest);
+  return card;
+}
+
+function buildSetRow(ex, sIdx) {
+  const key = buildKey(currentDay, ex.id, sIdx);
+  if (!setsData[key]) setsData[key] = { weight:'', reps:'', done:false };
+  const d = setsData[key];
+  const row = document.createElement('div');
+  row.className = 'set-row';
+  row.innerHTML = `<span class="set-num">${sIdx+1}</span>
+    <input class="set-input" type="number" inputmode="decimal" placeholder='ק"ג' value="${d.weight}" oninput="saveSet('${ex.id}',${sIdx},'weight',this.value)" min="0" step="2.5">
+    <input class="set-input" type="number" inputmode="numeric" placeholder="חז'" value="${d.reps}" oninput="saveSet('${ex.id}',${sIdx},'reps',this.value)" min="0" step="1">
+    <button class="done-btn${d.done?' done':''}" onclick="toggleDone('${ex.id}',${sIdx})"></button>`;
+  return row;
+}
+
+/* ══════════════════════════════
+   ACTIONS
+══════════════════════════════ */
+function switchDay(idx) {
+  currentDay = idx;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  document.getElementById('dayLabel').textContent = DAYS[idx].name;
+  renderExercises();
+}
+
+function renderExercises() {
+  const list = document.getElementById('exerciseList');
+  list.innerHTML = '';
+  getDayExercises(currentDay).forEach((ex,i) => list.appendChild(buildExCard(ex,i)));
+  updateProgress();
+}
+
+function saveSet(exId,sIdx,field,val) { setsData[buildKey(currentDay,exId,sIdx)][field]=val; updateProgress(); }
+
+function toggleDone(exId,sIdx) {
+  const k = buildKey(currentDay,exId,sIdx);
+  setsData[k].done = !setsData[k].done;
+  renderExercises(); // re-render for clean state
+}
+
+function addSet(ex) {
+  let n=0; for(let i=0;i<20;i++){if(setsData[buildKey(currentDay,ex.id,i)]!==undefined)n=i+1;else break;}
+  setsData[buildKey(currentDay,ex.id,n)]={weight:'',reps:'',done:false};
+  const sa=document.getElementById(`sets_${ex.id}`);
+  sa.insertBefore(buildSetRow(ex,n),sa.querySelector('.add-set-btn'));
+  updateProgress();
+}
+
+function toggleTip(exId) {
+  const tip=document.getElementById(`tip_${exId}`), btn=document.getElementById(`infoBtn_${exId}`);
+  const open=tip.classList.toggle('open');
+  btn.classList.toggle('open',open);
+  btn.textContent=open?'איך לבצע ▲':'איך לבצע ▼';
+}
+
+function toggleRest(exId,totalSec) {
+  const btn=document.getElementById(`restBtn_${exId}`), disp=document.getElementById(`rest_${exId}`);
+  if(timerIntervals[exId]){clearInterval(timerIntervals[exId]);delete timerIntervals[exId];disp.textContent='0:00';btn.textContent='התחל';btn.classList.remove('active');return;}
+  let rem=totalSec; btn.textContent='בטל'; btn.classList.add('active');
+  timerIntervals[exId]=setInterval(()=>{rem--;disp.textContent=`${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}`;if(rem<=0){clearInterval(timerIntervals[exId]);delete timerIntervals[exId];disp.textContent='✓';btn.textContent='התחל';btn.classList.remove('active');}},1000);
+}
+
+function updateProgress() {
+  let total=0,done=0;
+  DAYS[currentDay].exIds.forEach(exId=>{for(let i=0;i<15;i++){const k=buildKey(currentDay,exId,i);if(setsData[k]){total++;if(setsData[k].done)done++;}}});
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=`${done} / ${total} סטים הושלמו`;
+  document.getElementById('progressPct').textContent=pct+'%';
+}
+
+function finishWorkout() {
+  saveHistory();
+  let ts=0,tr=0,tv=0; const exR=[];
+  DAYS[currentDay].exIds.forEach(exId=>{
+    const sets=[]; for(let i=0;i<15;i++){const d=setsData[buildKey(currentDay,exId,i)];if(d&&d.done&&d.reps){const w=parseFloat(d.weight)||0,r=parseInt(d.reps)||0;sets.push({w,r});ts++;tr+=r;tv+=w*r;}}
+    if(sets.length) exR.push({name:EXERCISES[exId].name,sets});
+  });
+  document.getElementById('summaryDate').textContent=new Date().toLocaleDateString('he-IL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('statsGrid').innerHTML=`<div class="stat-card"><div class="stat-num">${ts}</div><div class="stat-label">סטים</div></div><div class="stat-card"><div class="stat-num">${tr}</div><div class="stat-label">חזרות</div></div><div class="stat-card"><div class="stat-num">${Math.round(tv).toLocaleString()}</div><div class="stat-label">נפח ק"ג</div></div><div class="stat-card"><div class="stat-num">${exR.length}</div><div class="stat-label">תרגילים</div></div>`;
+  document.getElementById('exSummaryList').innerHTML=exR.map(e=>`<div class="ex-summary-card"><div class="ex-sum-name">${e.name}</div><div>${e.sets.map((s,i)=>`<span class="set-log">${i+1}: ${s.w}×${s.r}</span>`).join(' ')}</div></div>`).join('');
+  document.getElementById('workoutScreen').classList.add('hidden');
+  document.getElementById('summaryScreen').classList.add('active');
+}
+
+function newWorkout() {
+  document.getElementById('workoutScreen').classList.remove('hidden');
+  document.getElementById('summaryScreen').classList.remove('active');
+}
+
+/* ══════════════════════════════
+   מסך התקדמות וסיכום שבועי
+══════════════════════════════ */
+let chartExFilter = 'all';
+
+function showProgressScreen() {
+  document.getElementById('workoutScreen').classList.add('hidden');
+  document.getElementById('progressScreen').classList.add('active');
+  buildChartFilters();
+  drawCharts();
+  buildWeeklySummary();
+}
+
+function hideProgressScreen() {
+  document.getElementById('progressScreen').classList.remove('active');
+  document.getElementById('workoutScreen').classList.remove('hidden');
+}
+
+function switchProgressTab(tab, btn) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('chartTab').style.display = tab === 'chart' ? 'block' : 'none';
+  document.getElementById('weeklyTab').style.display = tab === 'weekly' ? 'block' : 'none';
+  if (tab === 'chart') drawCharts();
+  if (tab === 'weekly') buildWeeklySummary();
+}
+
+/* ── בניית פילטרים לגרף ── */
+function buildChartFilters() {
+  const history = JSON.parse(localStorage.getItem('athlean_history') || '{"sessions":[]}');
+  const allExIds = new Set();
+  history.sessions.forEach(s => { if (s.exercises) Object.keys(s.exercises).forEach(id => allExIds.add(id)); });
+
+  const container = document.getElementById('chartFilter');
+  let html = `<button class="chart-filter-btn${chartExFilter === 'all' ? ' active' : ''}" onclick="setChartFilter('all',this)">הכל</button>`;
+  allExIds.forEach(id => {
+    const ex = EXERCISES[id];
+    if (ex) html += `<button class="chart-filter-btn${chartExFilter === id ? ' active' : ''}" onclick="setChartFilter('${id}',this)">${ex.name}</button>`;
+  });
+  container.innerHTML = html;
+}
+
+function setChartFilter(id, btn) {
+  chartExFilter = id;
+  document.querySelectorAll('.chart-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  drawCharts();
+}
+
+/* ── ציור גרפים ── */
+function drawCharts() {
+  const history = JSON.parse(localStorage.getItem('athlean_history') || '{"sessions":[]}');
+  const sessions = [...history.sessions].reverse(); // ישן לחדש
+
+  // הכנת נתונים
+  const volData = [], maxData = [], labels = [];
+  sessions.forEach(s => {
+    if (!s.exercises) return;
+    let vol = 0, maxW = 0;
+    Object.keys(s.exercises).forEach(exId => {
+      if (chartExFilter !== 'all' && exId !== chartExFilter) return;
+      s.exercises[exId].forEach(set => {
+        vol += (set.w || 0) * (set.r || 0);
+        if ((set.w || 0) > maxW) maxW = set.w;
+      });
+    });
+    if (chartExFilter !== 'all' && vol === 0) return;
+    volData.push(vol);
+    maxData.push(maxW);
+    labels.push(s.dateDisplay || s.date);
+  });
+
+  drawLineChart('progressChart', volData, labels, '#e8ff47', 'נפח (ק"ג)');
+  drawLineChart('maxWeightChart', maxData, labels, '#47b8ff', 'משקל מקס (ק"ג)');
+}
+
+function drawLineChart(canvasId, data, labels, color, ylabel) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0, 0, W, H);
+
+  if (data.length === 0) {
+    ctx.fillStyle = '#888';
+    ctx.font = '14px Heebo, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('אין עדיין נתונים — סיים אימונים כדי לראות את הגרף', W / 2, H / 2);
+    return;
+  }
+
+  const pad = { top: 20, right: 15, bottom: 40, left: 55 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+
+  const maxVal = Math.max(...data, 1);
+  const minVal = Math.min(...data, 0);
+  const range = maxVal - minVal || 1;
+
+  // ציר Y — קווים
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#666';
+  ctx.font = '10px Heebo, sans-serif';
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    const val = minVal + (range * i / 4);
+    const y = pad.top + cH - (cH * i / 4);
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(W - pad.right, y);
+    ctx.stroke();
+    ctx.fillText(Math.round(val).toLocaleString(), pad.left - 8, y + 4);
+  }
+
+  // קו הגרף
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  data.forEach((val, i) => {
+    const x = pad.left + (data.length === 1 ? cW / 2 : (i / (data.length - 1)) * cW);
+    const y = pad.top + cH - ((val - minVal) / range) * cH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // נקודות
+  data.forEach((val, i) => {
+    const x = pad.left + (data.length === 1 ? cW / 2 : (i / (data.length - 1)) * cW);
+    const y = pad.top + cH - ((val - minVal) / range) * cH;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = '#161616';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // תוויות ציר X
+  ctx.fillStyle = '#666';
+  ctx.font = '9px Heebo, sans-serif';
+  ctx.textAlign = 'center';
+  const maxLabels = Math.min(labels.length, 6);
+  for (let i = 0; i < maxLabels; i++) {
+    const idx = Math.round(i * (labels.length - 1) / Math.max(maxLabels - 1, 1));
+    const x = pad.left + (labels.length === 1 ? cW / 2 : (idx / (labels.length - 1)) * cW);
+    const label = labels[idx] || '';
+    const short = label.length > 10 ? label.slice(0, 10) : label;
+    ctx.fillText(short, x, H - pad.bottom + 18);
+  }
+}
+
+/* ── סיכום שבועי ── */
+function buildWeeklySummary() {
+  const history = JSON.parse(localStorage.getItem('athlean_history') || '{"sessions":[]}');
+
+  // מציאת אימוני השבוע האחרון (7 ימים אחרונים)
+  const now = new Date();
+  const weekAgo = new Date(now);
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const weekStart = new Date(now);
+  // מוצא את שבת האחרונה
+  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 1) % 7));
+  weekStart.setHours(0, 0, 0, 0);
+
+  const weekSessions = history.sessions.filter(s => {
+    const d = new Date(s.date);
+    return d >= weekAgo;
+  });
+
+  // סיכום כולל
+  let totalSets = 0, totalReps = 0, totalVol = 0, totalWorkouts = weekSessions.length;
+  const totalBox = document.getElementById('weeklyTotalBox');
+  const listEl = document.getElementById('weeklySummaryList');
+
+  if (weekSessions.length === 0) {
+    totalBox.innerHTML = '';
+    listEl.innerHTML = '<div class="weekly-empty">אין אימונים השבוע עדיין 💪<br><span style="font-size:12px;color:#666">סיים אימון כדי לראות סיכום כאן</span></div>';
+    return;
+  }
+
+  weekSessions.forEach(s => {
+    if (!s.exercises) return;
+    Object.values(s.exercises).forEach(sets => {
+      sets.forEach(set => {
+        totalSets++;
+        totalReps += set.r || 0;
+        totalVol += (set.w || 0) * (set.r || 0);
+      });
+    });
+  });
+
+  totalBox.innerHTML = `<div class="weekly-total">
+    <div class="weekly-total-title">📊 סיכום 7 ימים אחרונים</div>
+    <div class="weekly-total-grid">
+      <div class="weekly-total-item"><div class="weekly-total-num">${totalWorkouts}</div><div class="weekly-total-label">אימונים</div></div>
+      <div class="weekly-total-item"><div class="weekly-total-num">${totalSets}</div><div class="weekly-total-label">סטים</div></div>
+      <div class="weekly-total-item"><div class="weekly-total-num">${Math.round(totalVol).toLocaleString()}</div><div class="weekly-total-label">נפח ק"ג</div></div>
+    </div>
+  </div>`;
+
+  // כרטיסי אימונים
+  listEl.innerHTML = weekSessions.map(s => {
+    const dayNames = ['יום A — חזה + כתפיים + יד אחורית', 'יום B — גב + יד קידמית', 'יום C — רגליים + ליבה'];
+    const dayName = dayNames[s.dayIdx] || `יום ${s.dayIdx + 1}`;
+    let sessSets = 0, sessVol = 0, sessMaxW = 0;
+    const exRows = [];
+
+    if (s.exercises) {
+      Object.keys(s.exercises).forEach(exId => {
+        const ex = EXERCISES[exId];
+        const sets = s.exercises[exId];
+        let exVol = 0, exMax = 0;
+        sets.forEach(set => {
+          sessSets++;
+          exVol += (set.w || 0) * (set.r || 0);
+          sessVol += (set.w || 0) * (set.r || 0);
+          if ((set.w || 0) > exMax) exMax = set.w;
+          if ((set.w || 0) > sessMaxW) sessMaxW = set.w;
+        });
+        exRows.push(`<div class="weekly-ex-row">
+          <span class="weekly-ex-name">${ex ? ex.name : exId}</span>
+          <span class="weekly-ex-detail">${sets.length} סטים · מקס ${exMax} ק"ג · נפח ${Math.round(exVol).toLocaleString()}</span>
+        </div>`);
+      });
+    }
+
+    return `<div class="weekly-card">
+      <div class="weekly-day-title">${dayName} <span class="weekly-day-badge">${s.dateDisplay || s.date}</span></div>
+      ${exRows.join('')}
+      <div class="weekly-stat">
+        <div class="weekly-stat-item">סטים: <span>${sessSets}</span></div>
+        <div class="weekly-stat-item">נפח: <span>${Math.round(sessVol).toLocaleString()} ק"ג</span></div>
+        <div class="weekly-stat-item">מקס: <span>${sessMaxW} ק"ג</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── בדיקת שבת 20:00 לתזכורת סיכום ── */
+function checkWeeklySummaryNotification() {
+  const now = new Date();
+  // שבת = 6
+  if (now.getDay() === 6 && now.getHours() === 20) {
+    const lastNotif = localStorage.getItem('athlean_weekly_notif');
+    const todayStr = now.toISOString().split('T')[0];
+    if (lastNotif !== todayStr) {
+      localStorage.setItem('athlean_weekly_notif', todayStr);
+      try {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          new Notification('📊 ATHLEAN — סיכום שבועי', { body: 'בוא לראות את ההתקדמות שלך השבוע!' });
+        } else if (typeof Notification !== 'undefined' && Notification.permission !== 'denied') {
+          Notification.requestPermission().then(p => {
+            if (p === 'granted') new Notification('📊 ATHLEAN — סיכום שבועי', { body: 'בוא לראות את ההתקדמות שלך השבוע!' });
+          });
+        }
+      } catch(e) {}
+      showProgressScreen();
+      document.querySelector('.nav-tab:last-child').click();
+    }
+  }
+}
+
+// בדיקה כל דקה
+setInterval(checkWeeklySummaryNotification, 60000);
+checkWeeklySummaryNotification();
+
+/* ══ INIT ══ */
+loadSwaps();
+initSetsData();
+switchDay(0);
+</script>
+</body>
+</html>
