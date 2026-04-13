@@ -257,6 +257,13 @@
   .swap-revert { width: calc(100% - 2rem); margin: 8px 1rem 0; padding: 12px; border-radius: 10px; border: 1px dashed var(--border); background: transparent; color: var(--muted); font-family: 'Heebo', sans-serif; font-size: 13px; cursor: pointer; min-height: 44px; }
   .swap-revert:hover { border-color: var(--blue); color: var(--blue); }
 
+  /* ── Data Transfer ── */
+  .data-btns { display: flex; gap: 8px; margin-top: 1rem; }
+  .data-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'Heebo', sans-serif; font-size: 12px; cursor: pointer; min-height: 44px; text-align: center; }
+  .data-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .data-btn.import { border-color: rgba(71,255,138,0.3); color: var(--green); }
+  .data-btn.import:hover { background: rgba(71,255,138,0.06); }
+
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
@@ -286,6 +293,11 @@
     <div id="exerciseList"></div>
     <button class="finish-btn" onclick="finishWorkout()">סיים אימון →</button>
     <button class="next-btn" onclick="showProgressScreen()" style="margin-top:0.5rem">📊 התקדמות וסיכום שבועי</button>
+    <div class="data-btns">
+      <button class="data-btn" onclick="exportData()">📤 ייצוא נתונים</button>
+      <button class="data-btn import" onclick="importData()">📥 ייבוא נתונים</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
   </div>
   <div class="summary-screen" id="summaryScreen">
     <div class="summary-header"><div class="summary-icon">🔥</div><div class="summary-title">אימון הושלם!</div><div class="summary-sub" id="summaryDate"></div></div>
@@ -961,6 +973,71 @@ function buildSetRow(ex, sIdx) {
 /* ══════════════════════════════
    ACTIONS
 ══════════════════════════════ */
+
+/* ── ייצוא / ייבוא נתונים ── */
+function exportData() {
+  const data = {};
+  ['athlean_history','athlean_swaps','athlean_weekly_notif'].forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v) data[k] = JSON.parse(v);
+  });
+  if (Object.keys(data).length === 0) {
+    alert('אין נתונים לייצוא עדיין — סיים אימון קודם');
+    return;
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `athlean_backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData() {
+  document.getElementById('importFile').click();
+}
+
+function handleImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      let count = 0;
+      ['athlean_history','athlean_swaps','athlean_weekly_notif'].forEach(k => {
+        if (data[k]) {
+          // מיזוג היסטוריה במקום החלפה
+          if (k === 'athlean_history') {
+            const existing = JSON.parse(localStorage.getItem(k) || '{"sessions":[]}');
+            const imported = typeof data[k] === 'string' ? JSON.parse(data[k]) : data[k];
+            const existingIds = new Set(existing.sessions.map(s => s.id));
+            const newSessions = imported.sessions.filter(s => !existingIds.has(s.id));
+            existing.sessions = [...newSessions, ...existing.sessions]
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              .slice(0, 100);
+            localStorage.setItem(k, JSON.stringify(existing));
+          } else {
+            localStorage.setItem(k, JSON.stringify(data[k]));
+          }
+          count++;
+        }
+      });
+      if (count > 0) {
+        alert(`✅ יובאו ${count} סוגי נתונים בהצלחה!\nהדף ירענן עכשיו.`);
+        location.reload();
+      } else {
+        alert('⚠️ הקובץ לא הכיל נתונים מוכרים');
+      }
+    } catch (err) {
+      alert('❌ שגיאה בקריאת הקובץ: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
 function switchDay(idx) {
   currentDay = idx;
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
