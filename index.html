@@ -57,6 +57,10 @@
   .tab { padding: 10px 20px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; cursor: pointer; white-space: nowrap; background: transparent; color: var(--muted); transition: all 0.2s; font-family: 'Heebo', sans-serif; min-height: 44px; }
   .tab:hover { border-color: var(--accent); color: var(--accent); }
   .tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+  .tab.optional { border-style: dashed; }
+  .tab.optional.active { border-style: solid; }
+  .optional-badge { font-size: 9px; background: rgba(255,148,71,0.15); color: var(--orange); padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(255,148,71,0.3); margin-right: 4px; vertical-align: middle; }
+  .optional-label { display: block; text-align: center; font-size: 11px; color: var(--orange); margin-bottom: 0.75rem; padding: 6px 14px; background: rgba(255,148,71,0.08); border: 1px dashed rgba(255,148,71,0.3); border-radius: 10px; }
 
   .progress-wrap { margin-bottom: 1.25rem; }
   .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
@@ -100,11 +104,12 @@
   .tip-box.open { display: block; }
   .tip-heading { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: 1px; margin-bottom: 6px; }
 
-  .muscle-svg-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-  .muscle-svg-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; }
-  .muscle-svg-views { display: flex; gap: 8px; justify-content: center; }
-  .muscle-svg-view { text-align: center; flex: 1; }
-  .muscle-legend { display: flex; gap: 16px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .muscle-img-section { padding: 0 1.25rem 0.75rem; }
+  .muscle-img-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
+  .muscle-img-wrap { position: relative; display: flex; justify-content: center; background: var(--surface2); border-radius: 12px; padding: 10px; overflow: hidden; max-height: 200px; }
+  .muscle-img-base { height: 180px; object-fit: contain; opacity: 0.7; }
+  .muscle-img-overlay { position: absolute; top: 10px; left: 0; right: 0; height: 180px; object-fit: contain; mix-blend-mode: screen; pointer-events: none; }
+  .muscle-img-legend { display: flex; gap: 12px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
   .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
   .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
@@ -272,6 +277,7 @@
       <button class="tab active" onclick="switchDay(0)">יום A</button>
       <button class="tab" onclick="switchDay(1)">יום B</button>
       <button class="tab" onclick="switchDay(2)">יום C</button>
+      <button class="tab optional" onclick="switchDay(3)">יום D <span class="optional-badge">בונוס</span></button>
     </div>
     <div class="progress-wrap">
       <div class="progress-meta"><span id="progressLabel">0 / 0</span><span id="progressPct">0%</span></div>
@@ -531,6 +537,26 @@ const EXERCISES = {
   hanging_raise: ex("hanging_raise","הרמת רגליים בתלייה","Hanging Leg Raise","מתח","Hanging_Leg_Raise/0.jpg",
     sm('absP'), [{name:"Core / בטן תחתון",type:"p"}],
     3,"10–15",60,"מעולה לבטן תחתון.",["תלה על מתח","הרם ברכיים / רגליים","כיווץ בטן בלמעלה","ירידה מבוקרת"]),
+
+  /* ── Day D — Bonus Upper Body (new exercises) ── */
+  cable_crossover: ex("cable_crossover","כבל קרוסאובר","Cable Crossover","מכשיר כבלים כפול","Cable_Crossover/0.jpg",
+    sm('chestP','shouldS'), [{name:"חזה",type:"p"},{name:"כתף קדמית",type:"s"}],
+    3,"12–15",60,"stretch מעולה לחזה. הצלב ידיים בתחתית.",["כבלים גבוהים — צעד קדימה","מרפקים כמעט ישרים","הצלב ידיים למטה — כיווץ","חזרה מבוקרת — stretch"]),
+  pullup: ex("pullup","מתח רחב","Pull-Ups","מתח","Pullups/0.jpg",
+    sm('latP','biS','rdeltS'), [{name:"Lats",type:"p"},{name:"יד קידמית",type:"s"},{name:"Rear Delt",type:"s"}],
+    3,"6–10",90,"תרגיל compound קלאסי לגב עליון. אחיזה רחבה.",["אחיזה רחבה, כפות מלפנים","משוך סנטר מעל המוט","כיווץ שכמות בלמעלה","ירידה מבוקרת — stretch מלא"]),
+  upright_row: ex("upright_row","חתירה זקופה","Upright Row","בר / דמבלים","Upright_Barbell_Row/0.jpg",
+    sm('shouldP','trapS'), [{name:"כתף צדדית",type:"p"},{name:"טרפז",type:"s"}],
+    3,"10–12",60,"הרם עד גובה הסנטר. מרפקים מובילים.",["אחיזה ברוחב כתפיים או יותר צר","מרפקים מובילים כלפי מעלה","עד גובה הסנטר","ירידה איטית ומבוקרת"]),
+  bayesian_curl: ex("bayesian_curl","כפיפה ביישן בכבל","Bayesian Cable Curl","כבל נמוך","Cable_Hammer_Curls_-_Rope_Attachment/0.jpg",
+    sm('biP','foreS'), [{name:"יד קידמית — ראש ארוך",type:"p"}],
+    3,"10–12",60,"stretch מושלם ליד קידמית. מועדף ע\"י Dr. Mike.",["כבל נמוך — עמוד גב לכבל","יד אחורה — stretch מלא","כיפוף קדימה ומעלה","כיווץ מלא בלמעלה"]),
+  skull_crusher: ex("skull_crusher","מעיכת גולגולת","Skull Crusher","EZ Bar / דמבלים + ספסל","Lying_Triceps_Press/0.jpg",
+    sm('triP'), [{name:"יד אחורית (3 ראשים)",type:"p"}],
+    3,"10–12",60,"תרגיל מפתח ליד אחורית. מרפקים קבועים.",["שכב על ספסל, ידיים מעל","הורד לכיוון המצח","מרפקים לא זזים — קבועים","דחף חזרה למעלה — כיווץ"]),
+  rear_delt_fly: ex("rear_delt_fly","פרפר אחורי","Rear Delt Fly","דמבלים / מכשיר","Reverse_Flyes/0.jpg",
+    sm('shouldP','rdeltS','trapS'), [{name:"כתף אחורית",type:"p"},{name:"טרפז",type:"s"}],
+    3,"12–15",60,"בידוד מצוין לכתף אחורית. שמור על גב ישר.",["כפיפה קדימה 45° או על מכשיר","דמבלים למטה","הרם לצדדים — כיווץ שכמות","ירידה מבוקרת"]),
 };
 
 /* ── Alternatives Map ── */
@@ -551,6 +577,12 @@ const ALTS = {
   leg_press: ['bulgarian','hack_squat','goblet_squat'],
   calf_raise: ['seated_calf'],
   plank: ['ab_wheel','hanging_raise'],
+  cable_crossover: ['chest_fly','db_bench','pushup'],
+  pullup: ['chinup','pulldown','straight_arm'],
+  upright_row: ['lateral_raise','cable_lateral','face_pull'],
+  bayesian_curl: ['ez_curl','preacher_curl','bicep_curl'],
+  skull_crusher: ['overhead_tri','tricep_pushdown','dips'],
+  rear_delt_fly: ['face_pull','cable_lateral'],
 };
 
 /* ── Days (mutable — swaps change these) ── */
@@ -558,6 +590,7 @@ const DAYS_ORIGINAL = [
   { name:"יום A — חזה + כתפיים + יד אחורית", exIds:["bench","incline_db","ohp","lateral_raise","tricep_pushdown","overhead_tri"] },
   { name:"יום B — גב + יד קידמית", exIds:["pulldown","seated_row","db_row","bicep_curl","hammer_curl"] },
   { name:"יום C — רגליים + ליבה", exIds:["squat","rdl","leg_press","calf_raise","plank"] },
+  { name:"יום D — בונוס גוף עליון (אופציונלי)", exIds:["cable_crossover","pullup","upright_row","bayesian_curl","skull_crusher","rear_delt_fly"], optional:true },
 ];
 
 let DAYS = JSON.parse(JSON.stringify(DAYS_ORIGINAL));
@@ -724,15 +757,65 @@ function toggleHistory(exId) {
 }
 
 /* ══════════════════════════════
-   MUSCLE SVG
+   תמונות שרירים ריאליסטיות
 ══════════════════════════════ */
-function buildMuscleSVG(svgMuscles) {
-  const C={p:'#e8ff47',s:'#47b8ff',off:'#2a2a2a'};
-  const cm={};
-  svgMuscles.forEach(g=>g.ids.forEach(id=>{if(g.type==='p'||!cm[id])cm[id]=C[g.type]}));
-  const c=id=>cm[id]||C.off, o=id=>cm[id]?'0.88':'0.28';
-  const B=`<circle cx="50" cy="13" r="12" fill="#222" stroke="#3a3a3a" stroke-width="1"/><rect x="44" y="24" width="12" height="9" fill="#222"/><path d="M29 33Q22 33 17 38Q13 44 13 56L15 76 21 91 33 95 33 76Q41 74 50 74 59 74 67 76L67 95 79 91 85 76 87 56Q87 44 83 38 78 33 71 33 65 28 50 26 35 28 29 33Z" fill="#222" stroke="#3a3a3a" stroke-width=".8"/><rect x="7" y="34" width="11" height="36" rx="5" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="82" y="34" width="11" height="36" rx="5" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="8" y="71" width="10" height="26" rx="4" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="82" y="71" width="10" height="26" rx="4" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="30" y="95" width="16" height="40" rx="6" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="54" y="95" width="16" height="40" rx="6" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="31" y="137" width="13" height="32" rx="5" fill="#222" stroke="#3a3a3a" stroke-width=".5"/><rect x="56" y="137" width="13" height="32" rx="5" fill="#222" stroke="#3a3a3a" stroke-width=".5"/>`;
-  return `<div class="muscle-svg-section"><div class="muscle-svg-title">שרירים מעורבים</div><div class="muscle-svg-views"><div class="muscle-svg-view"><svg viewBox="0 0 100 210" width="100%" style="max-width:130px">${B}<ellipse cx="37" cy="50" rx="12" ry="9" fill="${c('f-chest-l')}" opacity="${o('f-chest-l')}"/><ellipse cx="63" cy="50" rx="12" ry="9" fill="${c('f-chest-r')}" opacity="${o('f-chest-r')}"/><ellipse cx="16" cy="40" rx="9" ry="8" fill="${c('f-shoulder-l')}" opacity="${o('f-shoulder-l')}"/><ellipse cx="84" cy="40" rx="9" ry="8" fill="${c('f-shoulder-r')}" opacity="${o('f-shoulder-r')}"/><rect x="8" y="36" width="10" height="24" rx="4" fill="${c('f-bicep-l')}" opacity="${o('f-bicep-l')}"/><rect x="82" y="36" width="10" height="24" rx="4" fill="${c('f-bicep-r')}" opacity="${o('f-bicep-r')}"/><rect x="7" y="37" width="7" height="22" rx="3" fill="${c('f-tricep-l')}" opacity="${o('f-tricep-l')}"/><rect x="86" y="37" width="7" height="22" rx="3" fill="${c('f-tricep-r')}" opacity="${o('f-tricep-r')}"/><rect x="9" y="72" width="9" height="22" rx="3" fill="${c('f-forearm-l')}" opacity="${o('f-forearm-l')}"/><rect x="82" y="72" width="9" height="22" rx="3" fill="${c('f-forearm-r')}" opacity="${o('f-forearm-r')}"/><rect x="38" y="58" width="24" height="28" rx="4" fill="${c('f-abs')}" opacity="${o('f-abs')}"/><rect x="31" y="96" width="14" height="37" rx="5" fill="${c('f-quad-l')}" opacity="${o('f-quad-l')}"/><rect x="55" y="96" width="14" height="37" rx="5" fill="${c('f-quad-r')}" opacity="${o('f-quad-r')}"/><rect x="32" y="138" width="11" height="28" rx="4" fill="${c('f-calf-l')}" opacity="${o('f-calf-l')}"/><rect x="57" y="138" width="11" height="28" rx="4" fill="${c('f-calf-r')}" opacity="${o('f-calf-r')}"/><text x="50" y="207" text-anchor="middle" font-size="8.5" fill="#555" font-family="Heebo,sans-serif">קדמי</text></svg></div><div class="muscle-svg-view"><svg viewBox="0 0 100 210" width="100%" style="max-width:130px">${B}<path d="M33 33Q50 29 67 33 70 43 50 49 30 43 33 33Z" fill="${c('b-trap')}" opacity="${o('b-trap')}"/><ellipse cx="16" cy="40" rx="9" ry="8" fill="${c('b-rdelt-l')}" opacity="${o('b-rdelt-l')}"/><ellipse cx="84" cy="40" rx="9" ry="8" fill="${c('b-rdelt-r')}" opacity="${o('b-rdelt-r')}"/><path d="M27 43Q17 57 18 86L33 90 33 76 29 50Z" fill="${c('b-lat-l')}" opacity="${o('b-lat-l')}"/><path d="M73 43Q83 57 82 86L67 90 67 76 71 50Z" fill="${c('b-lat-r')}" opacity="${o('b-lat-r')}"/><path d="M35 50L50 46 65 50 64 65 50 68 36 65Z" fill="${c('b-rhomboid')}" opacity="${o('b-rhomboid')}"/><rect x="37" y="67" width="26" height="22" rx="4" fill="${c('b-lowerback')}" opacity="${o('b-lowerback')}"/><rect x="8" y="36" width="10" height="26" rx="5" fill="${c('b-tricep-l')}" opacity="${o('b-tricep-l')}"/><rect x="82" y="36" width="10" height="26" rx="5" fill="${c('b-tricep-r')}" opacity="${o('b-tricep-r')}"/><rect x="9" y="72" width="9" height="22" rx="3" fill="${c('b-forearm-l')}" opacity="${o('b-forearm-l')}"/><rect x="82" y="72" width="9" height="22" rx="3" fill="${c('b-forearm-r')}" opacity="${o('b-forearm-r')}"/><ellipse cx="39" cy="95" rx="13" ry="10" fill="${c('b-glute-l')}" opacity="${o('b-glute-l')}"/><ellipse cx="61" cy="95" rx="13" ry="10" fill="${c('b-glute-r')}" opacity="${o('b-glute-r')}"/><rect x="31" y="101" width="14" height="34" rx="5" fill="${c('b-ham-l')}" opacity="${o('b-ham-l')}"/><rect x="55" y="101" width="14" height="34" rx="5" fill="${c('b-ham-r')}" opacity="${o('b-ham-r')}"/><rect x="32" y="138" width="11" height="28" rx="4" fill="${c('b-calf-l')}" opacity="${o('b-calf-l')}"/><rect x="57" y="138" width="11" height="28" rx="4" fill="${c('b-calf-r')}" opacity="${o('b-calf-r')}"/><text x="50" y="207" text-anchor="middle" font-size="8.5" fill="#555" font-family="Heebo,sans-serif">אחורי</text></svg></div></div><div class="muscle-legend"><div class="legend-item"><div class="legend-dot" style="background:#e8ff47"></div>ראשי</div><div class="legend-item"><div class="legend-dot" style="background:#47b8ff"></div>משני</div></div></div>`;
+const MUSCLE_IMG_BASE = 'https://raw.githubusercontent.com/MertenD/musclegroup-image-generator/main/resources/images/';
+const MUSCLE_IMG_MAP = {
+  'f-chest-l':'chest','f-chest-r':'chest',
+  'f-shoulder-l':'shoulders_front','f-shoulder-r':'shoulders_front',
+  'f-bicep-l':'biceps','f-bicep-r':'biceps',
+  'f-tricep-l':'triceps','f-tricep-r':'triceps',
+  'f-forearm-l':'forearm','f-forearm-r':'forearm',
+  'f-abs':'abs',
+  'f-quad-l':'quadriceps','f-quad-r':'quadriceps',
+  'f-calf-l':'calfs','f-calf-r':'calfs',
+  'b-trap':'neck',
+  'b-rdelt-l':'shoulders_back','b-rdelt-r':'shoulders_back',
+  'b-lat-l':'latissimus','b-lat-r':'latissimus',
+  'b-rhomboid':'back_upper',
+  'b-lowerback':'back_lower',
+  'b-tricep-l':'triceps','b-tricep-r':'triceps',
+  'b-forearm-l':'forearm','b-forearm-r':'forearm',
+  'b-glute-l':'gluteus','b-glute-r':'gluteus',
+  'b-ham-l':'hamstring','b-ham-r':'hamstring',
+  'b-calf-l':'calfs','b-calf-r':'calfs',
+};
+
+function buildMuscleSection(svgMuscles) {
+  // מציאת שרירים ראשיים ומשניים (ללא כפילויות)
+  const primary = new Set(), secondary = new Set();
+  svgMuscles.forEach(g => {
+    g.ids.forEach(id => {
+      const img = MUSCLE_IMG_MAP[id];
+      if (!img) return;
+      if (g.type === 'p') { primary.add(img); secondary.delete(img); }
+      else if (!primary.has(img)) secondary.add(img);
+    });
+  });
+
+  // בניית שכבות overlay
+  const overlays = [...primary, ...secondary].map(img =>
+    `<img class="muscle-img-overlay" src="${MUSCLE_IMG_BASE}${img}.png" style="opacity:${primary.has(img)?'0.9':'0.5'}" onerror="this.style.display='none'">`
+  ).join('');
+
+  // תוויות
+  const labels = [];
+  const IMG_HE = {chest:'חזה',shoulders_front:'כתף קדמית',shoulders_back:'כתף אחורית',biceps:'יד קידמית',triceps:'יד אחורית',forearm:'אמה',abs:'בטן',quadriceps:'ארבע-ראשי',calfs:'שוק',neck:'טרפז',latissimus:'גב רחב',back_upper:'גב עליון',back_lower:'גב תחתון',gluteus:'ישבן',hamstring:'ירך אחורית'};
+  primary.forEach(img => labels.push(`<span style="color:var(--accent);font-size:11px;font-weight:700">${IMG_HE[img]||img}</span>`));
+  secondary.forEach(img => labels.push(`<span style="color:var(--blue);font-size:11px">${IMG_HE[img]||img}</span>`));
+
+  return `<div class="muscle-img-section">
+    <div class="muscle-img-title">שרירים מעורבים</div>
+    <div class="muscle-img-wrap">
+      <img class="muscle-img-base" src="${MUSCLE_IMG_BASE}baseImage.png" alt="גוף" onerror="this.parentElement.style.display='none'">
+      ${overlays}
+    </div>
+    <div class="muscle-img-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#e8ff47"></div>ראשי</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#47b8ff"></div>משני</div>
+    </div>
+    <div style="text-align:center;margin-top:6px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${labels.join(' ')}</div>
+  </div>`;
 }
 
 /* ══════════════════════════════
@@ -763,9 +846,14 @@ function buildExCard(ex, exIdx) {
       </div>
     </div>`;
 
+  // תמונות שרירים — תמיד גלויות מתחת ל-header
+  const muscleDiv = document.createElement('div');
+  muscleDiv.innerHTML = buildMuscleSection(ex.svgMuscles);
+  card.appendChild(muscleDiv.firstElementChild);
+
   const tipBox = document.createElement('div');
   tipBox.className = 'tip-box'; tipBox.id = `tip_${ex.id}`;
-  tipBox.innerHTML = `<div class="tip-heading">🎯 Tip</div><div style="margin-bottom:10px">${ex.tip}</div><div class="tip-heading">✅ ביצוע נכון</div>${ex.form.map((f,i)=>`<div style="margin-bottom:4px"><span style="color:var(--accent);font-weight:700">${i+1}.</span> ${f}</div>`).join('')}${buildMuscleSVG(ex.svgMuscles)}`;
+  tipBox.innerHTML = `<div class="tip-heading">🎯 Tip</div><div style="margin-bottom:10px">${ex.tip}</div><div class="tip-heading">✅ ביצוע נכון</div>${ex.form.map((f,i)=>`<div style="margin-bottom:4px"><span style="color:var(--accent);font-weight:700">${i+1}.</span> ${f}</div>`).join('')}`;
   card.appendChild(tipBox);
 
   const histBox = document.createElement('div');
@@ -824,6 +912,13 @@ function switchDay(idx) {
 function renderExercises() {
   const list = document.getElementById('exerciseList');
   list.innerHTML = '';
+  // הצגת badge אופציונלי ליום D
+  if (DAYS_ORIGINAL[currentDay] && DAYS_ORIGINAL[currentDay].optional) {
+    const label = document.createElement('div');
+    label.className = 'optional-label';
+    label.textContent = '⭐ יום בונוס — לא חובה! עשה אותו רק אם בא לך אימון נוסף השבוע';
+    list.appendChild(label);
+  }
   getDayExercises(currentDay).forEach((ex,i) => list.appendChild(buildExCard(ex,i)));
   updateProgress();
 }
@@ -1096,8 +1191,7 @@ function buildWeeklySummary() {
 
   // כרטיסי אימונים
   listEl.innerHTML = weekSessions.map(s => {
-    const dayNames = ['יום A — חזה + כתפיים + יד אחורית', 'יום B — גב + יד קידמית', 'יום C — רגליים + ליבה'];
-    const dayName = dayNames[s.dayIdx] || `יום ${s.dayIdx + 1}`;
+    const dayName = DAYS_ORIGINAL[s.dayIdx]?.name || `יום ${s.dayIdx + 1}`;
     let sessSets = 0, sessVol = 0, sessMaxW = 0;
     const exRows = [];
 
