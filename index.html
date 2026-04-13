@@ -104,13 +104,12 @@
   .tip-box.open { display: block; }
   .tip-heading { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: 1px; margin-bottom: 6px; }
 
-  .muscle-img-section { padding: 0 1.25rem 0.75rem; }
-  .muscle-img-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
-  .muscle-img-wrap { display: flex; justify-content: center; background: var(--surface2); border-radius: 12px; padding: 10px; overflow: hidden; }
-  .muscle-img-inner { position: relative; display: inline-block; height: 180px; }
-  .muscle-img-base { height: 180px; display: block; opacity: 0.7; }
-  .muscle-img-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-  .muscle-img-legend { display: flex; gap: 12px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+  .muscle-section { padding: 0 1.25rem 0.75rem; }
+  .muscle-section-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
+  .muscle-body-wrap { display: flex; gap: 6px; justify-content: center; background: var(--surface2); border-radius: 12px; padding: 12px 8px; }
+  .muscle-body-view { text-align: center; flex: 1; max-width: 140px; }
+  .muscle-body-label { font-size: 9px; color: #555; margin-top: 4px; font-family: 'Heebo', sans-serif; }
+  .muscle-legend { display: flex; gap: 14px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
   .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
   .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
@@ -758,70 +757,123 @@ function toggleHistory(exId) {
 }
 
 /* ══════════════════════════════
-   תמונות שרירים ריאליסטיות
+   שרירים — SVG אנטומי מפורט
 ══════════════════════════════ */
-const MUSCLE_IMG_BASE = 'https://raw.githubusercontent.com/MertenD/musclegroup-image-generator/main/resources/images/';
-const MUSCLE_IMG_MAP = {
-  'f-chest-l':'chest','f-chest-r':'chest',
-  'f-shoulder-l':'shoulders_front','f-shoulder-r':'shoulders_front',
-  'f-bicep-l':'biceps','f-bicep-r':'biceps',
-  'f-tricep-l':'triceps','f-tricep-r':'triceps',
-  'f-forearm-l':'forearm','f-forearm-r':'forearm',
-  'f-abs':'abs',
-  'f-quad-l':'quadriceps','f-quad-r':'quadriceps',
-  'f-calf-l':'calfs','f-calf-r':'calfs',
-  'b-trap':'neck',
-  'b-rdelt-l':'shoulders_back','b-rdelt-r':'shoulders_back',
-  'b-lat-l':'latissimus','b-lat-r':'latissimus',
-  'b-rhomboid':'back_upper',
-  'b-lowerback':'back_lower',
-  'b-tricep-l':'triceps','b-tricep-r':'triceps',
-  'b-forearm-l':'forearm','b-forearm-r':'forearm',
-  'b-glute-l':'gluteus','b-glute-r':'gluteus',
-  'b-ham-l':'hamstring','b-ham-r':'hamstring',
-  'b-calf-l':'calfs','b-calf-r':'calfs',
-};
-
 function buildMuscleSection(svgMuscles) {
-  // מציאת שרירים ראשיים ומשניים (ללא כפילויות)
-  const primary = new Set(), secondary = new Set();
-  svgMuscles.forEach(g => {
-    g.ids.forEach(id => {
-      const img = MUSCLE_IMG_MAP[id];
-      if (!img) return;
-      if (g.type === 'p') { primary.add(img); secondary.delete(img); }
-      else if (!primary.has(img)) secondary.add(img);
-    });
-  });
+  const P='#e63946', S='#4895ef', OFF='#3a3a3a', SKIN='#2a2a2a';
+  const cm={};
+  svgMuscles.forEach(g=>g.ids.forEach(id=>{if(g.type==='p'||!cm[id])cm[id]=g.type==='p'?P:S}));
+  const c=id=>cm[id]||OFF;
+  const op=id=>cm[id]?1:0.3;
 
-  // בניית שכבות overlay — ראשי באדום, משני בכחול
-  const overlays = [...primary, ...secondary].map(img => {
-    const isPrimary = primary.has(img);
-    // hue-rotate: התמונות המקוריות כחולות. לאדום = hue-rotate(-60deg), לצהוב = hue-rotate(45deg)
-    const filter = isPrimary ? 'hue-rotate(-40deg) saturate(2.5) brightness(1.2)' : 'brightness(1.1)';
-    const opacity = isPrimary ? '0.85' : '0.45';
-    return `<img class="muscle-img-overlay" src="${MUSCLE_IMG_BASE}${img}.png" style="opacity:${opacity};filter:${filter}" onerror="this.style.display='none'">`;
-  }).join('');
+  /* ──── גוף קדמי ──── */
+  const front = `<svg viewBox="0 0 200 440" width="100%">
+  <defs>
+    <radialGradient id="skinG"><stop offset="0%" stop-color="#444"/><stop offset="100%" stop-color="#2a2a2a"/></radialGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- ראש -->
+  <ellipse cx="100" cy="28" rx="22" ry="26" fill="url(#skinG)" stroke="#444" stroke-width="0.8"/>
+  <!-- צוואר -->
+  <rect x="90" y="52" width="20" height="16" rx="4" fill="${SKIN}"/>
+  <!-- כתפיים -->
+  <ellipse cx="42" cy="78" rx="18" ry="14" fill="${c('f-shoulder-l')}" opacity="${op('f-shoulder-l')}" filter="${cm['f-shoulder-l']?'url(#glow)':''}"/>
+  <ellipse cx="158" cy="78" rx="18" ry="14" fill="${c('f-shoulder-r')}" opacity="${op('f-shoulder-r')}" filter="${cm['f-shoulder-r']?'url(#glow)':''}"/>
+  <!-- חזה -->
+  <path d="M62 72 Q65 62 100 66 Q135 62 138 72 L138 100 Q120 112 100 114 Q80 112 62 100Z" fill="${c('f-chest-l')}" opacity="${op('f-chest-l')}" filter="${cm['f-chest-l']?'url(#glow)':''}"/>
+  <!-- בטן -->
+  <path d="M72 114 L72 190 Q86 196 100 196 Q114 196 128 190 L128 114 Q114 120 100 120 Q86 120 72 114Z" fill="${c('f-abs')}" opacity="${op('f-abs')}" filter="${cm['f-abs']?'url(#glow)':''}"/>
+  <!-- קווי בטן -->
+  <line x1="100" y1="118" x2="100" y2="192" stroke="#222" stroke-width="1" opacity="0.6"/>
+  <line x1="76" y1="132" x2="124" y2="132" stroke="#222" stroke-width="0.6" opacity="0.4"/>
+  <line x1="76" y1="148" x2="124" y2="148" stroke="#222" stroke-width="0.6" opacity="0.4"/>
+  <line x1="76" y1="164" x2="124" y2="164" stroke="#222" stroke-width="0.6" opacity="0.4"/>
+  <line x1="78" y1="180" x2="122" y2="180" stroke="#222" stroke-width="0.6" opacity="0.4"/>
+  <!-- ביצפס -->
+  <path d="M22 88 Q16 104 18 132 Q20 140 28 140 Q36 138 34 108 Q34 92 30 84Z" fill="${c('f-bicep-l')}" opacity="${op('f-bicep-l')}" filter="${cm['f-bicep-l']?'url(#glow)':''}"/>
+  <path d="M178 88 Q184 104 182 132 Q180 140 172 140 Q164 138 166 108 Q166 92 170 84Z" fill="${c('f-bicep-r')}" opacity="${op('f-bicep-r')}" filter="${cm['f-bicep-r']?'url(#glow)':''}"/>
+  <!-- טריצפס (צד פנימי זרוע) -->
+  <path d="M30 86 Q38 92 40 110 Q40 134 36 140 Q28 142 22 138 Q16 130 18 108 Q18 90 24 84Z" fill="${c('f-tricep-l')}" opacity="${op('f-tricep-l')}" filter="${cm['f-tricep-l']?'url(#glow)':''}"/>
+  <path d="M170 86 Q162 92 160 110 Q160 134 164 140 Q172 142 178 138 Q184 130 182 108 Q182 90 176 84Z" fill="${c('f-tricep-r')}" opacity="${op('f-tricep-r')}" filter="${cm['f-tricep-r']?'url(#glow)':''}"/>
+  <!-- אמות -->
+  <path d="M18 144 Q14 160 12 188 Q14 196 22 194 Q28 188 30 164 Q32 150 30 142Z" fill="${c('f-forearm-l')}" opacity="${op('f-forearm-l')}" filter="${cm['f-forearm-l']?'url(#glow)':''}"/>
+  <path d="M182 144 Q186 160 188 188 Q186 196 178 194 Q172 188 170 164 Q168 150 170 142Z" fill="${c('f-forearm-r')}" opacity="${op('f-forearm-r')}" filter="${cm['f-forearm-r']?'url(#glow)':''}"/>
+  <!-- ידיים -->
+  <ellipse cx="14" cy="204" rx="7" ry="10" fill="${SKIN}" opacity="0.5"/>
+  <ellipse cx="186" cy="204" rx="7" ry="10" fill="${SKIN}" opacity="0.5"/>
+  <!-- ארבע ראשי -->
+  <path d="M66 200 Q58 220 56 260 Q56 284 60 300 Q68 310 78 306 Q86 296 86 270 Q88 240 84 216 Q82 204 74 198Z" fill="${c('f-quad-l')}" opacity="${op('f-quad-l')}" filter="${cm['f-quad-l']?'url(#glow)':''}"/>
+  <path d="M134 200 Q142 220 144 260 Q144 284 140 300 Q132 310 122 306 Q114 296 114 270 Q112 240 116 216 Q118 204 126 198Z" fill="${c('f-quad-r')}" opacity="${op('f-quad-r')}" filter="${cm['f-quad-r']?'url(#glow)':''}"/>
+  <!-- ברכיים -->
+  <ellipse cx="72" cy="312" rx="12" ry="8" fill="${SKIN}" opacity="0.4"/>
+  <ellipse cx="128" cy="312" rx="12" ry="8" fill="${SKIN}" opacity="0.4"/>
+  <!-- שוק -->
+  <path d="M62 322 Q56 345 58 385 Q60 398 68 400 Q76 398 78 385 Q82 355 80 332 Q78 322 72 318Z" fill="${c('f-calf-l')}" opacity="${op('f-calf-l')}" filter="${cm['f-calf-l']?'url(#glow)':''}"/>
+  <path d="M138 322 Q144 345 142 385 Q140 398 132 400 Q124 398 122 385 Q118 355 120 332 Q122 322 128 318Z" fill="${c('f-calf-r')}" opacity="${op('f-calf-r')}" filter="${cm['f-calf-r']?'url(#glow)':''}"/>
+  <!-- כפות רגליים -->
+  <ellipse cx="68" cy="418" rx="14" ry="6" fill="${SKIN}" opacity="0.3"/>
+  <ellipse cx="132" cy="418" rx="14" ry="6" fill="${SKIN}" opacity="0.3"/>
+  <!-- קווי מתאר גוף -->
+  <path d="M78 66 Q60 60 40 68 Q24 76 20 88 L12 190 14 204 M122 66 Q140 60 160 68 Q176 76 180 88 L188 190 186 204" fill="none" stroke="#555" stroke-width="0.5" opacity="0.3"/>
+  </svg>`;
 
-  // תוויות
-  const labels = [];
-  const IMG_HE = {chest:'חזה',shoulders_front:'כתף קדמית',shoulders_back:'כתף אחורית',biceps:'יד קידמית',triceps:'יד אחורית',forearm:'אמה',abs:'בטן',quadriceps:'ארבע-ראשי',calfs:'שוק',neck:'טרפז',latissimus:'גב רחב',back_upper:'גב עליון',back_lower:'גב תחתון',gluteus:'ישבן',hamstring:'ירך אחורית'};
-  primary.forEach(img => labels.push(`<span style="color:var(--accent);font-size:11px;font-weight:700">${IMG_HE[img]||img}</span>`));
-  secondary.forEach(img => labels.push(`<span style="color:var(--blue);font-size:11px">${IMG_HE[img]||img}</span>`));
+  /* ──── גוף אחורי ──── */
+  const back = `<svg viewBox="0 0 200 440" width="100%">
+  <defs>
+    <radialGradient id="skinG2"><stop offset="0%" stop-color="#444"/><stop offset="100%" stop-color="#2a2a2a"/></radialGradient>
+    <filter id="glow2"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- ראש -->
+  <ellipse cx="100" cy="28" rx="22" ry="26" fill="url(#skinG2)" stroke="#444" stroke-width="0.8"/>
+  <!-- צוואר -->
+  <rect x="90" y="52" width="20" height="16" rx="4" fill="${SKIN}"/>
+  <!-- טרפז -->
+  <path d="M70 58 Q100 50 130 58 L138 72 Q120 80 100 82 Q80 80 62 72Z" fill="${c('b-trap')}" opacity="${op('b-trap')}" filter="${cm['b-trap']?'url(#glow2)':''}"/>
+  <!-- כתפיים אחורי (Rear Delt) -->
+  <ellipse cx="42" cy="78" rx="18" ry="14" fill="${c('b-rdelt-l')}" opacity="${op('b-rdelt-l')}" filter="${cm['b-rdelt-l']?'url(#glow2)':''}"/>
+  <ellipse cx="158" cy="78" rx="18" ry="14" fill="${c('b-rdelt-r')}" opacity="${op('b-rdelt-r')}" filter="${cm['b-rdelt-r']?'url(#glow2)':''}"/>
+  <!-- Lats -->
+  <path d="M56 82 Q42 100 38 140 Q40 166 50 178 L66 186 Q70 160 68 130 Q66 100 62 82Z" fill="${c('b-lat-l')}" opacity="${op('b-lat-l')}" filter="${cm['b-lat-l']?'url(#glow2)':''}"/>
+  <path d="M144 82 Q158 100 162 140 Q160 166 150 178 L134 186 Q130 160 132 130 Q134 100 138 82Z" fill="${c('b-lat-r')}" opacity="${op('b-lat-r')}" filter="${cm['b-lat-r']?'url(#glow2)':''}"/>
+  <!-- Rhomboids (גב עליון) -->
+  <path d="M70 78 Q100 72 130 78 L128 114 Q114 120 100 120 Q86 120 72 114Z" fill="${c('b-rhomboid')}" opacity="${op('b-rhomboid')}" filter="${cm['b-rhomboid']?'url(#glow2)':''}"/>
+  <!-- קו עמוד שדרה -->
+  <line x1="100" y1="80" x2="100" y2="190" stroke="#222" stroke-width="1.2" opacity="0.5"/>
+  <!-- גב תחתון -->
+  <path d="M76 160 Q88 166 100 166 Q112 166 124 160 L124 192 Q112 198 100 198 Q88 198 76 192Z" fill="${c('b-lowerback')}" opacity="${op('b-lowerback')}" filter="${cm['b-lowerback']?'url(#glow2)':''}"/>
+  <!-- טריצפס -->
+  <path d="M22 86 Q16 100 16 122 Q16 140 22 146 Q30 148 36 142 Q42 130 40 110 Q40 92 34 84Z" fill="${c('b-tricep-l')}" opacity="${op('b-tricep-l')}" filter="${cm['b-tricep-l']?'url(#glow2)':''}"/>
+  <path d="M178 86 Q184 100 184 122 Q184 140 178 146 Q170 148 164 142 Q158 130 160 110 Q160 92 166 84Z" fill="${c('b-tricep-r')}" opacity="${op('b-tricep-r')}" filter="${cm['b-tricep-r']?'url(#glow2)':''}"/>
+  <!-- אמות אחורי -->
+  <path d="M20 150 Q16 168 14 190 Q16 198 22 196 Q28 190 30 168 Q32 156 28 148Z" fill="${c('b-forearm-l')}" opacity="${op('b-forearm-l')}" filter="${cm['b-forearm-l']?'url(#glow2)':''}"/>
+  <path d="M180 150 Q184 168 186 190 Q184 198 178 196 Q172 190 170 168 Q168 156 172 148Z" fill="${c('b-forearm-r')}" opacity="${op('b-forearm-r')}" filter="${cm['b-forearm-r']?'url(#glow2)':''}"/>
+  <!-- ידיים -->
+  <ellipse cx="16" cy="206" rx="7" ry="10" fill="${SKIN}" opacity="0.5"/>
+  <ellipse cx="184" cy="206" rx="7" ry="10" fill="${SKIN}" opacity="0.5"/>
+  <!-- Glutes -->
+  <path d="M66 196 Q58 200 56 216 Q58 236 68 240 Q80 242 90 232 Q96 224 96 210 Q94 198 84 194Z" fill="${c('b-glute-l')}" opacity="${op('b-glute-l')}" filter="${cm['b-glute-l']?'url(#glow2)':''}"/>
+  <path d="M134 196 Q142 200 144 216 Q142 236 132 240 Q120 242 110 232 Q104 224 104 210 Q106 198 116 194Z" fill="${c('b-glute-r')}" opacity="${op('b-glute-r')}" filter="${cm['b-glute-r']?'url(#glow2)':''}"/>
+  <!-- Hamstrings -->
+  <path d="M62 244 Q56 268 58 300 Q60 314 68 316 Q78 312 82 290 Q86 268 82 248 Q78 240 70 240Z" fill="${c('b-ham-l')}" opacity="${op('b-ham-l')}" filter="${cm['b-ham-l']?'url(#glow2)':''}"/>
+  <path d="M138 244 Q144 268 142 300 Q140 314 132 316 Q122 312 118 290 Q114 268 118 248 Q122 240 130 240Z" fill="${c('b-ham-r')}" opacity="${op('b-ham-r')}" filter="${cm['b-ham-r']?'url(#glow2)':''}"/>
+  <!-- שוק אחורי -->
+  <path d="M60 324 Q54 348 56 386 Q58 400 66 402 Q74 400 76 386 Q80 358 78 334 Q76 324 70 320Z" fill="${c('b-calf-l')}" opacity="${op('b-calf-l')}" filter="${cm['b-calf-l']?'url(#glow2)':''}"/>
+  <path d="M140 324 Q146 348 144 386 Q142 400 134 402 Q126 400 124 386 Q120 358 122 334 Q124 324 130 320Z" fill="${c('b-calf-r')}" opacity="${op('b-calf-r')}" filter="${cm['b-calf-r']?'url(#glow2)':''}"/>
+  <!-- כפות רגליים -->
+  <ellipse cx="68" cy="418" rx="14" ry="6" fill="${SKIN}" opacity="0.3"/>
+  <ellipse cx="132" cy="418" rx="14" ry="6" fill="${SKIN}" opacity="0.3"/>
+  </svg>`;
 
-  return `<div class="muscle-img-section">
-    <div class="muscle-img-title">שרירים מעורבים</div>
-    <div class="muscle-img-wrap">
-      <div class="muscle-img-inner">
-        <img class="muscle-img-base" src="${MUSCLE_IMG_BASE}baseImage.png" alt="גוף" onerror="this.parentElement.parentElement.style.display='none'">
-        ${overlays}
-      </div>
+  return `<div class="muscle-section">
+    <div class="muscle-section-title">שרירים מעורבים</div>
+    <div class="muscle-body-wrap">
+      <div class="muscle-body-view">${front}<div class="muscle-body-label">קדמי</div></div>
+      <div class="muscle-body-view">${back}<div class="muscle-body-label">אחורי</div></div>
     </div>
-    <div class="muscle-img-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#e8ff47"></div>ראשי</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#47b8ff"></div>משני</div>
+    <div class="muscle-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:${P}"></div>ראשי</div>
+      <div class="legend-item"><div class="legend-dot" style="background:${S}"></div>משני</div>
     </div>
-    <div style="text-align:center;margin-top:6px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${labels.join(' ')}</div>
   </div>`;
 }
 
