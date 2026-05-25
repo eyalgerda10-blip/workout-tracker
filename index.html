@@ -457,6 +457,9 @@ const EXERCISES = {
   chest_fly: ex("chest_fly","פרפר עם דמבלים","Dumbbell Fly","ספסל + דמבלים","Dumbbell_Flyes/0.jpg",
     sm('chestP','shouldS'), [{name:"חזה",type:"p"},{name:"כתף קדמית",type:"s"}],
     3,"12–15",60,"stretch עמוק. שמור כיפוף קטן במרפקים.",["שכב שטוח","כיפוף קטן במרפקים","פתח לצדדים — stretch","חזור בחיבוק"]),
+  pec_deck: ex("pec_deck","מכונת פרפר","Pec Deck Machine","מכונת פרפר","Butterfly/0.jpg",
+    sm('chestP','shouldS'), [{name:"חזה",type:"p"},{name:"כתף קדמית",type:"s"}],
+    3,"12–15",60,"בידוד חזה במסלול קבוע — מצוין למתח קבוע וכיווץ.",["שב — גב צמוד למשענת","אחוז בידיות בגובה החזה","סגור ידיים — כיווץ 1 שנייה","פתח לאט עד stretch מלא"]),
 
   incline_barbell: ex("incline_barbell","לחיצת אינקליין בר","Incline Barbell Press","ספסל 30° + בר","Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg",
     sm('chestP','shouldS','triS'), [{name:"חזה עליון",type:"p"},{name:"כתף קדמית",type:"s"},{name:"יד אחורית",type:"s"}],
@@ -539,6 +542,10 @@ const EXERCISES = {
     sm('quadP','gluteP','hamS'), [{name:"Quadriceps",type:"p"},{name:"Glutes",type:"p"},{name:"Hamstrings",type:"s"}],
     3,"10–12",75,"חד-צדדי. שיווי משקל + כוח.",["רגל אחורית על ספסל","ירידה עד 90° בברך","דחף מרגל קדמית","גוף ישר"]),
 
+  leg_extension: ex("leg_extension","פשיטת ברכיים","Leg Extension","מכשיר פשיטת ברכיים","Leg_Extensions/0.jpg",
+    sm('quadP'), [{name:"Quadriceps",type:"p"}],
+    3,"12–15",60,"בידוד מושלם ל-quads. שמור מתח קבוע, ירידה איטית.",["שב במכונה — גב צמוד למשענת","פשט ברכיים עד יישור מלא","כיווץ 1 שנייה בלמעלה","ירידה מבוקרת 2-3 שניות"]),
+
   seated_calf: ex("seated_calf","עגלים ישיבה","Seated Calf Raise","מכשיר עגלים ישיבה","Seated_Calf_Raise/0.jpg",
     sm('calfP'), [{name:"Soleus",type:"p"},{name:"Gastrocnemius",type:"s"}],
     4,"15–20",45,"דגש על Soleus (ברכיים כפופות).",["ברכיים כפופות 90°","stretch מלא","כיווץ מלא","תנועה מלאה"]),
@@ -587,9 +594,10 @@ const ALTS = {
   squat: ['goblet_squat','front_squat','hack_squat'],
   rdl: ['stiff_dl','good_morning'],
   leg_press: ['bulgarian','hack_squat','goblet_squat'],
+  leg_extension: ['leg_press','hack_squat','bulgarian'],
   calf_raise: ['seated_calf'],
   plank: ['ab_wheel','hanging_raise'],
-  cable_crossover: ['chest_fly','db_bench','pushup'],
+  cable_crossover: ['pec_deck','chest_fly','db_bench','pushup'],
   pullup: ['chinup','pulldown','straight_arm'],
   upright_row: ['lateral_raise','cable_lateral','face_pull'],
   bayesian_curl: ['ez_curl','preacher_curl','bicep_curl'],
@@ -599,9 +607,9 @@ const ALTS = {
 
 /* ── Days (mutable — swaps change these) ── */
 const DAYS_ORIGINAL = [
-  { name:"יום A — חזה + כתפיים + יד אחורית", exIds:["bench","incline_db","ohp","lateral_raise","tricep_pushdown","overhead_tri"] },
+  { name:"יום A — חזה + כתפיים + יד אחורית", exIds:["bench","cable_crossover","ohp","lateral_raise","tricep_pushdown","overhead_tri"] },
   { name:"יום B — גב + יד קידמית", exIds:["pulldown","seated_row","db_row","bicep_curl","hammer_curl"] },
-  { name:"יום C — רגליים + ליבה", exIds:["squat","rdl","leg_press","calf_raise","plank"] },
+  { name:"יום C — רגליים + ליבה", exIds:["squat","rdl","leg_press","leg_extension","calf_raise","plank"] },
   { name:"יום D — בונוס גוף עליון (אופציונלי)", exIds:["cable_crossover","pullup","upright_row","bayesian_curl","skull_crusher","rear_delt_fly"], optional:true },
 ];
 
