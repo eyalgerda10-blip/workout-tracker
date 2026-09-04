@@ -394,7 +394,9 @@ const SM = {
   hamP:    [{ids:['b-ham-l','b-ham-r'],type:'p'}],
   hamS:    [{ids:['b-ham-l','b-ham-r'],type:'s'}],
   calfP:   [{ids:['f-calf-l','f-calf-r','b-calf-l','b-calf-r'],type:'p'}],
+  calfS:   [{ids:['f-calf-l','f-calf-r','b-calf-l','b-calf-r'],type:'s'}],
   absP:    [{ids:['f-abs'],type:'p'}],
+  lowbackP:[{ids:['b-lowerback'],type:'p'}],
   lowbackS:[{ids:['b-lowerback'],type:'s'}],
 };
 function sm(...keys) { return keys.flatMap(k => SM[k]); }
@@ -446,6 +448,21 @@ const EXERCISES = {
   plank: ex("plank","פלאנק + דד באג","Plank + Dead Bug","מזרן","Plank/0.jpg",
     sm('absP','lowbackS'), [{name:"Core",type:"p"},{name:"גב תחתון",type:"s"}],
     3,"30-45 שניות",45,"כיווץ, לא כפיפה. ישבן + ליבה יחד.",["גוף ישר","כיווץ ישבן + ליבה","נשימה רגועה","Dead bug: גב שטוח"]),
+
+  leg_curl: ex("leg_curl","כיפוף ברכיים בישיבה","Seated Leg Curl","מכשיר כיפוף ברכיים בישיבה","Seated_Leg_Curl/0.jpg",
+    sm('hamP','calfS'), [{name:"Hamstrings",type:"p"},{name:"Gastrocnemius",type:"s"}],
+    3,"10–12",75,"בידוד נקי לירך אחורית, בלי עומס על הגב. עצור שנייה בכיווץ.",["גב צמוד למשענת, כרית מעל הקרסול","כפוף ברכיים עד הסוף","כיווץ 1 שנייה בתחתית","החזרה איטית 2-3 שניות — אל תזרוק"]),
+  lying_leg_curl: ex("lying_leg_curl","כיפוף ברכיים בשכיבה","Lying Leg Curl","מכשיר כיפוף ברכיים בשכיבה","Lying_Leg_Curls/0.jpg",
+    sm('hamP','calfS'), [{name:"Hamstrings",type:"p"},{name:"Gastrocnemius",type:"s"}],
+    3,"10–12",75,"אותו שריר, זווית ירך אחרת. אל תרים את האגן מהריפוד.",["שכב על הבטן, כרית מעל הקרסול","אגן צמוד לספסל לכל אורך התנועה","כפוף עד הכיווץ המלא","ירידה מבוקרת"]),
+
+  smith_calf_raise: ex("smith_calf_raise","עגלים בעמידה בסמית'","Smith Machine Calf Raise","מכונת סמית' + מדרגה","Smith_Machine_Calf_Raise/0.jpg",
+    sm('calfP'), [{name:"Gastrocnemius",type:"p"},{name:"Soleus",type:"s"}],
+    4,"12–15",60,"המוט במסגרת = יציב, אפשר להעמיס כבד. מדרגה מתחת לכפות לטווח מלא.",["מדרגה מתחת לכף הרגל הקדמית","המוט על הטרפז מתחת לעורף","ירידה איטית — stretch מלא בעקב","עלייה מקסימלית על קצות אצבעות, כיווץ שנייה"]),
+
+  back_extension: ex("back_extension","הרמת גו (היפראקסטנשן)","Back Extension","ספסל היפראקסטנשן / רומן צ'ייר","Hyperextensions_Back_Extensions/0.jpg",
+    sm('lowbackP','gluteS','hamS'), [{name:"גב תחתון (Erectors)",type:"p"},{name:"Glutes",type:"s"},{name:"Hamstrings",type:"s"}],
+    3,"12–15",60,"תנועה מבוקרת — בלי לזרוק את הגוף. אל תקמר יתר על המידה בלמעלה.",["רגליים נעולות מתחת לכריות, אגן על הריפוד","ידיים על החזה או מוט על הכתפיים","ירידה איטית מהמותן — גב ניטרלי","עלייה עד קו ישר עם הגוף, כיווץ ישבן"]),
 
   /* ── Alternatives ── */
   db_bench: ex("db_bench","לחיצה עם דמבלים","Dumbbell Bench Press","ספסל + דמבלים","Dumbbell_Bench_Press/0.jpg",
@@ -593,9 +610,13 @@ const ALTS = {
   hammer_curl: ['rope_curl','reverse_curl'],
   squat: ['goblet_squat','front_squat','hack_squat'],
   rdl: ['stiff_dl','good_morning'],
-  leg_press: ['bulgarian','hack_squat','goblet_squat'],
-  leg_extension: ['leg_press','hack_squat','bulgarian'],
-  calf_raise: ['seated_calf'],
+  leg_press: ['squat','hack_squat','bulgarian','goblet_squat'],
+  leg_extension: ['leg_press','hack_squat','bulgarian','front_squat'],
+  calf_raise: ['smith_calf_raise','seated_calf'],
+  smith_calf_raise: ['calf_raise','seated_calf'],
+  leg_curl: ['lying_leg_curl','rdl','stiff_dl','good_morning'],
+  lying_leg_curl: ['leg_curl','rdl','stiff_dl'],
+  back_extension: ['good_morning','rdl','stiff_dl','hanging_raise'],
   plank: ['ab_wheel','hanging_raise'],
   cable_crossover: ['pec_deck','chest_fly','db_bench','pushup'],
   pullup: ['chinup','pulldown','straight_arm'],
@@ -609,7 +630,7 @@ const ALTS = {
 const DAYS_ORIGINAL = [
   { name:"יום A — חזה + כתפיים + יד אחורית", exIds:["bench","cable_crossover","ohp","lateral_raise","tricep_pushdown","overhead_tri"] },
   { name:"יום B — גב + יד קידמית", exIds:["pulldown","seated_row","db_row","bicep_curl","hammer_curl"] },
-  { name:"יום C — רגליים + ליבה", exIds:["squat","rdl","leg_press","leg_extension","calf_raise","plank"] },
+  { name:"יום C — רגליים + גב תחתון", exIds:["leg_press","leg_extension","leg_curl","smith_calf_raise","back_extension"] },
   { name:"יום D — בונוס גוף עליון (אופציונלי)", exIds:["cable_crossover","pullup","upright_row","bayesian_curl","skull_crusher","rear_delt_fly"], optional:true },
 ];
 
@@ -618,6 +639,13 @@ let DAYS = JSON.parse(JSON.stringify(DAYS_ORIGINAL));
 // Load saved swaps
 function loadSwaps() {
   try {
+    // Day C was rebuilt — old index-based swaps for that day are meaningless
+    if (!localStorage.getItem('dayC_v3_migrated')) {
+      const old = JSON.parse(localStorage.getItem('athlean_swaps') || '{}');
+      Object.keys(old).filter(k => k.startsWith('2_')).forEach(k => delete old[k]);
+      localStorage.setItem('athlean_swaps', JSON.stringify(old));
+      localStorage.setItem('dayC_v3_migrated', '1');
+    }
     const saved = JSON.parse(localStorage.getItem('athlean_swaps') || '{}');
     Object.keys(saved).forEach(key => {
       const [di, ei] = key.split('_').map(Number);
