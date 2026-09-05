@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Athlean">
 <meta name="theme-color" content="#0d0d0d">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <title>תוכנית אימונים — ATHLEAN-X</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -264,6 +267,43 @@
   .data-btn.import { border-color: rgba(71,255,138,0.3); color: var(--green); }
   .data-btn.import:hover { background: rgba(71,255,138,0.06); }
 
+  /* ── RIR + Overload + Volume + Offline ── */
+  .sets-header, .set-row { grid-template-columns: 26px 1fr 1fr 52px 42px !important; gap: 5px !important; }
+  .rir-select {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 2px; font-size: 14px; text-align: center; text-align-last: center;
+    color: var(--text); outline: none; font-family: 'Heebo', sans-serif; width: 100%;
+    -webkit-appearance: none; appearance: none; cursor: pointer;
+  }
+  .rir-select:focus { border-color: var(--accent); }
+  .rir-select.filled { color: var(--blue); border-color: rgba(71,184,255,0.35); }
+  .rir-help { font-size: 10px; color: #555; text-align: center; padding: 0 1.25rem 10px; line-height: 1.5; }
+
+  .coach-box { margin: 0 1rem 0.875rem; padding: 11px 13px; border-radius: 12px; font-size: 12.5px; line-height: 1.55; display: flex; gap: 9px; align-items: flex-start; }
+  .coach-box .ci { font-size: 15px; line-height: 1.2; flex-shrink: 0; }
+  .coach-up   { background: rgba(71,255,138,0.07); border: 1px solid rgba(71,255,138,0.28); color: var(--green); }
+  .coach-hold { background: rgba(232,255,71,0.06); border: 1px solid rgba(232,255,71,0.22); color: var(--accent); }
+  .coach-down { background: rgba(255,148,71,0.07); border: 1px solid rgba(255,148,71,0.28); color: var(--orange); }
+  .coach-box b { font-weight: 700; }
+  .coach-sub { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+
+  .vol-row { margin-bottom: 14px; }
+  .vol-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; margin-bottom: 5px; }
+  .vol-name { color: var(--text); }
+  .vol-num { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 0.5px; }
+  .vol-track { position: relative; height: 9px; border-radius: 5px; background: var(--surface2); overflow: hidden; }
+  .vol-fill { position: absolute; top: 0; right: 0; height: 100%; border-radius: 5px; transition: width 0.4s; }
+  .vol-mev { position: absolute; top: -3px; width: 2px; height: 15px; background: rgba(255,255,255,0.35); border-radius: 2px; }
+  .vol-tag { font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-right: 6px; }
+  .vol-low  { color: var(--orange); } .vol-low .vol-fill  { background: var(--orange); }
+  .vol-ok   { color: var(--green);  } .vol-ok  .vol-fill  { background: var(--green); }
+  .vol-high { color: var(--accent); } .vol-high .vol-fill { background: var(--accent); }
+  .vol-legend { font-size: 11px; color: var(--muted); line-height: 1.7; margin-top: 4px; }
+  .deload-box { background: rgba(255,148,71,0.08); border: 1px solid rgba(255,148,71,0.3); border-radius: 14px; padding: 1rem 1.1rem; margin-bottom: 1.1rem; font-size: 13px; color: var(--orange); line-height: 1.6; }
+
+  .offline-strip { position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; background: var(--orange); color: #000; text-align: center; font-size: 12px; font-weight: 700; padding: 7px calc(0.5rem + var(--safe-bot)); display: none; }
+  .offline-strip.show { display: block; }
+
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
@@ -318,6 +358,7 @@
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchProgressTab('chart',this)">📈 גרף התקדמות</button>
       <button class="nav-tab" onclick="switchProgressTab('weekly',this)">📋 סיכום שבועי</button>
+      <button class="nav-tab" onclick="switchProgressTab('volume',this)">💪 נפח שרירים</button>
     </div>
     <div id="chartTab">
       <div class="section-title">📈 גרף התקדמות — נפח אימון</div>
@@ -336,8 +377,14 @@
       <div id="weeklyTotalBox"></div>
       <div id="weeklySummaryList"></div>
     </div>
+    <div id="volumeTab" style="display:none">
+      <div class="section-title">💪 נפח שבועי לפי קבוצת שריר</div>
+      <div id="volumeContent"></div>
+    </div>
   </div>
 </div>
+
+<div class="offline-strip" id="offlineStrip">📴 אין אינטרנט — האפליקציה עובדת, הנתונים נשמרים במכשיר</div>
 
 <!-- Swap Modal -->
 <div class="swap-overlay" id="swapOverlay" onclick="if(event.target===this)closeSwap()">
@@ -675,6 +722,32 @@ function getDayExercises(dayIdx) {
    STATE
 ══════════════════════════════ */
 let currentDay = 0, setsData = {}, timerIntervals = {};
+
+/* ── שמירת האימון הנוכחי (שורד רענון / סגירת הדפדפן) ── */
+const CUR_KEY = 'athlean_current';
+let _saveTimer = null;
+
+function saveCurrent() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveCurrentNow, 250);
+}
+function saveCurrentNow() {
+  clearTimeout(_saveTimer);
+  try { localStorage.setItem(CUR_KEY, JSON.stringify({ t: Date.now(), d: setsData })); } catch(e) {}
+}
+function loadCurrent() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CUR_KEY) || 'null');
+    if (saved && saved.d && typeof saved.d === 'object') setsData = saved.d;
+  } catch(e) {}
+}
+function clearCurrentDay(dayIdx) {
+  Object.keys(setsData).forEach(k => { if (k.indexOf('d' + dayIdx + '_') === 0) delete setsData[k]; });
+  saveCurrentNow();
+}
+// גיבוי נוסף ברגע שהדף נסגר / עובר לרקע
+window.addEventListener('pagehide', saveCurrentNow);
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveCurrentNow(); });
 let swapDayIdx = -1, swapExIdx = -1;
 
 function buildKey(di, exId, si) { return `d${di}_${exId}_s${si}`; }
@@ -686,7 +759,8 @@ function initSetsData() {
       if (!ex) return;
       for (let s = 0; s < ex.defaultSets; s++) {
         const k = buildKey(di, exId, s);
-        if (!setsData[k]) setsData[k] = { weight:'', reps:'', done:false };
+        if (!setsData[k]) setsData[k] = { weight:'', reps:'', rir:'', done:false };
+        else if (setsData[k].rir === undefined) setsData[k].rir = '';
       }
     });
   });
@@ -762,7 +836,7 @@ function saveHistory() {
     const sets = [];
     for (let i = 0; i < 20; i++) {
       const d = setsData[buildKey(currentDay, exId, i)];
-      if (d && (d.weight !== '' || d.reps !== '')) sets.push({ w:parseFloat(d.weight)||0, r:parseInt(d.reps)||0, done:d.done });
+      if (d && (d.weight !== '' || d.reps !== '')) sets.push({ w:parseFloat(d.weight)||0, r:parseInt(d.reps)||0, rir:(d.rir===''||d.rir===undefined||d.rir===null)?null:parseInt(d.rir), done:d.done });
     }
     if (sets.length) exercises[exId] = sets;
   });
@@ -802,6 +876,66 @@ function toggleHistory(exId) {
       <div class="hist-sets">${sets.map((set,i)=>`<span class="hist-set">${i+1}: ${set.w}ק"ג×${set.r}</span>`).join('')}</div>
       ${vol>0?`<div class="hist-vol">נפח: ${vol.toLocaleString()} ק"ג</div>`:''}</div>`;
   }).join('');
+}
+
+/* ══════════════════════════════
+   מאמן עומס מתקדם — Progressive Overload
+══════════════════════════════ */
+function parseRepRange(txt) {
+  const m = String(txt).match(/(\d+)\s*[–—-]\s*(\d+)/);
+  if (m) return { lo:+m[1], hi:+m[2] };
+  const one = String(txt).match(/(\d+)/);
+  return one ? { lo:+one[1], hi:+one[1] } : null;
+}
+
+/* המלצה למשקל הבא, על סמך האימון האחרון של אותו תרגיל באותו יום */
+function getOverloadHint(exId) {
+  const exDef = EXERCISES[exId];
+  if (!exDef) return null;
+  const hist = getExHistory(currentDay, exId, 1);
+  if (!hist.length) return null;
+
+  const sets = (hist[0].exercises[exId] || []).filter(s => s.r > 0);
+  if (!sets.length) return null;
+
+  const range = parseRepRange(exDef.repsTarget);
+  if (!range) return null;
+
+  const topW = Math.max(...sets.map(s => s.w || 0));
+  if (topW <= 0) return null;                 // משקל גוף / תרגיל זמן — אין מה להעלות
+
+  const working = sets.filter(s => (s.w || 0) === topW);
+  const rirs = working.map(s => s.rir).filter(v => v !== null && v !== undefined && v !== '').map(Number);
+  const avgRir = rirs.length ? rirs.reduce((a,b) => a+b, 0) / rirs.length : null;
+
+  const step = topW >= 60 ? 5 : 2.5;
+  const when = hist[0].dateDisplay || hist[0].date;
+  const lastTxt = '<span class="coach-sub">אימון קודם (' + when + '): ' + topW + ' ק"ג × ' +
+    working.map(s => s.r).join(', ') + ' חזרות' +
+    (avgRir !== null ? ' · RIR ' + (Math.round(avgRir * 10) / 10) : '') + '</span>';
+
+  const allAtTop = working.every(s => s.r >= range.hi);
+  const anyBelow = working.some(s => s.r < range.lo);
+
+  if (allAtTop) {
+    const fresh = (avgRir !== null && avgRir >= 3);
+    const jump = fresh ? step * 2 : step;
+    return { type:'up', icon:'⬆️',
+      html:'<b>עלה ל־' + (topW + jump) + ' ק"ג</b> — סגרת ' + range.hi + ' חזרות בכל הסטים' +
+           (fresh ? ' ועוד נשאר לך הרבה במאגר' : '') + '.' + lastTxt };
+  }
+  if (anyBelow) {
+    return { type:'down', icon:'⚠️',
+      html:'<b>רד ל־' + Math.max(0, topW - step) + ' ק"ג</b> — ירדת מתחת ל־' + range.lo +
+           ' חזרות. עדיף טווח נכון ממשקל גדול.' + lastTxt };
+  }
+  if (avgRir !== null && avgRir >= 3) {
+    return { type:'up', icon:'⬆️',
+      html:'<b>עלה ל־' + (topW + step) + ' ק"ג</b> — נשארו לך ' + Math.round(avgRir) +
+           ' חזרות במאגר, זה קל מדי.' + lastTxt };
+  }
+  return { type:'hold', icon:'🎯',
+    html:'<b>הישאר על ' + topW + ' ק"ג</b> — כוון ל־' + range.hi + ' חזרות בכל הסטים, ואז תעלה.' + lastTxt };
 }
 
 /* ══════════════════════════════
@@ -968,11 +1102,19 @@ function buildExCard(ex, exIdx) {
   histBox.innerHTML = `<div class="hist-heading">📅 היסטוריה</div><div id="histContent_${ex.id}"></div>`;
   card.appendChild(histBox);
 
+  const hint = getOverloadHint(ex.id);
+  if (hint) {
+    const coach = document.createElement('div');
+    coach.className = 'coach-box coach-' + hint.type;
+    coach.innerHTML = '<span class="ci">' + hint.icon + '</span><span>' + hint.html + '</span>';
+    card.appendChild(coach);
+  }
+
   card.appendChild(Object.assign(document.createElement('div'),{className:'divider'}));
 
   const sh = document.createElement('div');
   sh.className = 'sets-header';
-  sh.innerHTML = '<span>סט</span><span>ק"ג</span><span>חזרות</span><span></span>';
+  sh.innerHTML = '<span>סט</span><span>ק"ג</span><span>חזרות</span><span>RIR</span><span></span>';
   card.appendChild(sh);
 
   const sa = document.createElement('div');
@@ -986,6 +1128,11 @@ function buildExCard(ex, exIdx) {
   sa.appendChild(addBtn);
   card.appendChild(sa);
 
+  const rirHelp = document.createElement('div');
+  rirHelp.className = 'rir-help';
+  rirHelp.innerHTML = 'RIR = כמה חזרות עוד נשארו לך במאגר בסוף הסט. 0 = כשל מוחלט · 2 = יכולת עוד 2. כוון ל־1–2.';
+  card.appendChild(rirHelp);
+
   const rest = document.createElement('div');
   rest.className = 'rest-strip';
   rest.innerHTML = `<span class="rest-label">מנוחה: ${ex.restSec}s</span><span class="rest-timer-val" id="rest_${ex.id}">0:00</span><button class="rest-ctrl-btn" id="restBtn_${ex.id}" onclick="toggleRest('${ex.id}',${ex.restSec})">התחל</button>`;
@@ -995,13 +1142,17 @@ function buildExCard(ex, exIdx) {
 
 function buildSetRow(ex, sIdx) {
   const key = buildKey(currentDay, ex.id, sIdx);
-  if (!setsData[key]) setsData[key] = { weight:'', reps:'', done:false };
+  if (!setsData[key]) setsData[key] = { weight:'', reps:'', rir:'', done:false };
   const d = setsData[key];
   const row = document.createElement('div');
   row.className = 'set-row';
+  const rirVal = (d.rir === undefined || d.rir === null) ? '' : String(d.rir);
+  const rirOpts = ['', '0', '1', '2', '3', '4']
+    .map(v => `<option value="${v}"${rirVal===v?' selected':''}>${v===''?'—':(v==='4'?'4+':v)}</option>`).join('');
   row.innerHTML = `<span class="set-num">${sIdx+1}</span>
     <input class="set-input" type="number" inputmode="decimal" placeholder='ק"ג' value="${d.weight}" oninput="saveSet('${ex.id}',${sIdx},'weight',this.value)" min="0" step="2.5">
     <input class="set-input" type="number" inputmode="numeric" placeholder="חז'" value="${d.reps}" oninput="saveSet('${ex.id}',${sIdx},'reps',this.value)" min="0" step="1">
+    <select class="rir-select${rirVal!==''?' filled':''}" onchange="saveSet('${ex.id}',${sIdx},'rir',this.value);this.classList.toggle('filled',this.value!=='')">${rirOpts}</select>
     <button class="done-btn${d.done?' done':''}" onclick="toggleDone('${ex.id}',${sIdx})"></button>`;
   return row;
 }
@@ -1013,7 +1164,7 @@ function buildSetRow(ex, sIdx) {
 /* ── ייצוא / ייבוא נתונים ── */
 function exportData() {
   const data = {};
-  ['athlean_history','athlean_swaps','athlean_weekly_notif'].forEach(k => {
+  ['athlean_history','athlean_swaps','athlean_weekly_notif','athlean_current'].forEach(k => {
     const v = localStorage.getItem(k);
     if (v) data[k] = JSON.parse(v);
   });
@@ -1042,7 +1193,7 @@ function handleImport(event) {
     try {
       const data = JSON.parse(e.target.result);
       let count = 0;
-      ['athlean_history','athlean_swaps','athlean_weekly_notif'].forEach(k => {
+      ['athlean_history','athlean_swaps','athlean_weekly_notif','athlean_current'].forEach(k => {
         if (data[k]) {
           // מיזוג היסטוריה במקום החלפה
           if (k === 'athlean_history') {
@@ -1095,20 +1246,21 @@ function renderExercises() {
   updateProgress();
 }
 
-function saveSet(exId,sIdx,field,val) { setsData[buildKey(currentDay,exId,sIdx)][field]=val; updateProgress(); }
+function saveSet(exId,sIdx,field,val) { setsData[buildKey(currentDay,exId,sIdx)][field]=val; updateProgress(); saveCurrent(); }
 
 function toggleDone(exId,sIdx) {
   const k = buildKey(currentDay,exId,sIdx);
   setsData[k].done = !setsData[k].done;
+  saveCurrentNow();
   renderExercises(); // re-render for clean state
 }
 
 function addSet(ex) {
   let n=0; for(let i=0;i<20;i++){if(setsData[buildKey(currentDay,ex.id,i)]!==undefined)n=i+1;else break;}
-  setsData[buildKey(currentDay,ex.id,n)]={weight:'',reps:'',done:false};
+  setsData[buildKey(currentDay,ex.id,n)]={weight:'',reps:'',rir:'',done:false};
   const sa=document.getElementById(`sets_${ex.id}`);
   sa.insertBefore(buildSetRow(ex,n),sa.querySelector('.add-set-btn'));
-  updateProgress();
+  updateProgress(); saveCurrentNow();
 }
 
 function toggleTip(exId) {
@@ -1144,6 +1296,7 @@ function finishWorkout() {
   document.getElementById('summaryDate').textContent=new Date().toLocaleDateString('he-IL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('statsGrid').innerHTML=`<div class="stat-card"><div class="stat-num">${ts}</div><div class="stat-label">סטים</div></div><div class="stat-card"><div class="stat-num">${tr}</div><div class="stat-label">חזרות</div></div><div class="stat-card"><div class="stat-num">${Math.round(tv).toLocaleString()}</div><div class="stat-label">נפח ק"ג</div></div><div class="stat-card"><div class="stat-num">${exR.length}</div><div class="stat-label">תרגילים</div></div>`;
   document.getElementById('exSummaryList').innerHTML=exR.map(e=>`<div class="ex-summary-card"><div class="ex-sum-name">${e.name}</div><div>${e.sets.map((s,i)=>`<span class="set-log">${i+1}: ${s.w}×${s.r}</span>`).join(' ')}</div></div>`).join('');
+  clearCurrentDay(currentDay);
   document.getElementById('workoutScreen').classList.add('hidden');
   document.getElementById('summaryScreen').classList.add('active');
 }
@@ -1151,6 +1304,8 @@ function finishWorkout() {
 function newWorkout() {
   document.getElementById('workoutScreen').classList.remove('hidden');
   document.getElementById('summaryScreen').classList.remove('active');
+  initSetsData();
+  renderExercises();
 }
 
 /* ══════════════════════════════
@@ -1176,8 +1331,10 @@ function switchProgressTab(tab, btn) {
   btn.classList.add('active');
   document.getElementById('chartTab').style.display = tab === 'chart' ? 'block' : 'none';
   document.getElementById('weeklyTab').style.display = tab === 'weekly' ? 'block' : 'none';
+  document.getElementById('volumeTab').style.display = tab === 'volume' ? 'block' : 'none';
   if (tab === 'chart') drawCharts();
   if (tab === 'weekly') buildWeeklySummary();
+  if (tab === 'volume') buildMuscleVolume();
 }
 
 /* ── בניית פילטרים לגרף ── */
@@ -1398,6 +1555,106 @@ function buildWeeklySummary() {
   }).join('');
 }
 
+
+/* ══════════════════════════════
+   נפח שבועי לפי קבוצת שריר
+   סט ישיר = 1, סט עקיף = 0.5 (מקובל בספרות ההיפרטרופיה)
+   MEV = מינימום שמייצר גדילה · MAV = הנפח המקסימלי המועיל
+══════════════════════════════ */
+const MUSCLE_GROUPS = [
+  { name:'חזה',        re:/chest/,              mev:10, mav:20 },
+  { name:'גב',         re:/lat|rhomboid|trap/,  mev:10, mav:22 },
+  { name:'כתפיים',     re:/shoulder|rdelt/,     mev:8,  mav:22 },
+  { name:'יד קידמית',  re:/bicep/,              mev:8,  mav:20 },
+  { name:'יד אחורית',  re:/tricep/,             mev:8,  mav:20 },
+  { name:'ארבע ראשי',  re:/quad/,               mev:8,  mav:20 },
+  { name:'ירך אחורית', re:/ham/,                mev:6,  mav:16 },
+  { name:'ישבן',       re:/glute/,              mev:4,  mav:12 },
+  { name:'תאומים',     re:/calf/,               mev:8,  mav:16 },
+  { name:'בטן',        re:/abs/,                mev:4,  mav:16 },
+  { name:'גב תחתון',   re:/lowerback/,          mev:2,  mav:10 },
+  { name:'אמות',       re:/forearm/,            mev:0,  mav:12 },
+];
+
+function groupsForExercise(exId) {
+  const exDef = EXERCISES[exId];
+  const out = new Map();                       // שם קבוצה -> משקל הסט (1 ישיר / 0.5 עקיף)
+  if (!exDef || !exDef.svgMuscles) return out;
+  exDef.svgMuscles.forEach(entry => {
+    const w = entry.type === 'p' ? 1 : 0.5;
+    (entry.ids || []).forEach(id => {
+      const g = MUSCLE_GROUPS.find(mg => mg.re.test(id));
+      if (g && (!out.has(g.name) || out.get(g.name) < w)) out.set(g.name, w);
+    });
+  });
+  return out;
+}
+
+function buildMuscleVolume() {
+  const box = document.getElementById('volumeContent');
+  const history = JSON.parse(localStorage.getItem('athlean_history') || '{"sessions":[]}');
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+  const weekSessions = history.sessions.filter(s => new Date(s.date) >= weekAgo);
+
+  if (!weekSessions.length) {
+    box.innerHTML = '<div class="weekly-empty">אין אימונים ב־7 הימים האחרונים 💪<br><span style="font-size:12px;color:#666">סיים אימון כדי לראות כמה סטים כל שריר מקבל</span></div>';
+    return;
+  }
+
+  const totals = {};
+  let rirSum = 0, rirCount = 0;
+  MUSCLE_GROUPS.forEach(g => totals[g.name] = 0);
+
+  weekSessions.forEach(sess => {
+    if (!sess.exercises) return;
+    Object.keys(sess.exercises).forEach(exId => {
+      const sets = sess.exercises[exId] || [];
+      sets.forEach(st => { if (st.rir !== null && st.rir !== undefined) { rirSum += st.rir; rirCount++; } });
+      groupsForExercise(exId).forEach((w, gName) => { totals[gName] += sets.length * w; });
+    });
+  });
+
+  const rows = MUSCLE_GROUPS.map(g => {
+    const v = Math.round(totals[g.name] * 10) / 10;
+    let cls = 'vol-ok', tag = 'בטווח';
+    if (v < g.mev) { cls = 'vol-low';  tag = v === 0 ? 'לא אומן' : 'מתחת ל-MEV'; }
+    else if (v > g.mav) { cls = 'vol-high'; tag = 'מעל MAV'; }
+    const pct = Math.min(100, (v / g.mav) * 100);
+    const mevPct = Math.min(100, (g.mev / g.mav) * 100);
+    return `<div class="vol-row ${cls}">
+      <div class="vol-head">
+        <span class="vol-name">${g.name} <span class="vol-tag">${tag}</span></span>
+        <span class="vol-num">${v} <span dir="ltr" style="font-size:11px;color:var(--muted);unicode-bidi:isolate">${g.mev}–${g.mav}</span></span>
+      </div>
+      <div class="vol-track">
+        <div class="vol-fill" style="width:${pct}%"></div>
+        <div class="vol-mev" style="right:${mevPct}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const avgRir = rirCount ? Math.round((rirSum / rirCount) * 10) / 10 : null;
+  let deload = '';
+  if (avgRir !== null && rirCount >= 10 && avgRir < 1) {
+    deload = `<div class="deload-box">🛑 <b>שקול שבוע דילוד (Deload)</b><br>
+      ה-RIR הממוצע שלך השבוע הוא ${avgRir} — כלומר אתה מסיים כמעט כל סט בכשל.
+      זה שורף את יכולת ההתאוששות. שבוע אחד עם חצי מהסטים ו־60% מהמשקל, ואז חוזרים חזק.</div>`;
+  } else if (avgRir !== null && rirCount >= 10 && avgRir > 3) {
+    deload = `<div class="deload-box" style="background:rgba(232,255,71,0.06);border-color:rgba(232,255,71,0.3);color:var(--accent)">
+      💤 <b>אתה מתאמן קל מדי</b><br>ה-RIR הממוצע השבוע הוא ${avgRir} — נשארות לך יותר מ־3 חזרות במאגר. תעלה משקל.</div>`;
+  }
+
+  box.innerHTML = deload + rows + `<div class="vol-legend">
+    <b style="color:var(--text)">איך קוראים את זה:</b><br>
+    כל סט שמאמן שריר <b>ישירות</b> נספר כ־1, סט שמאמן אותו <b>בעקיפין</b> נספר כחצי.<br>
+    <span style="color:var(--orange)">כתום</span> = מתחת למינימום שמייצר גדילה ·
+    <span style="color:var(--green)">ירוק</span> = בטווח האפקטיבי ·
+    <span style="color:var(--accent)">צהוב</span> = מעל מה שאתה מסוגל להתאושש ממנו.<br>
+    הקו הלבן על הפס = ה-MEV, המינימום.
+    ${avgRir !== null ? '<br>RIR ממוצע השבוע: <b style="color:var(--blue)">' + avgRir + '</b> (' + rirCount + ' סטים עם דירוג)' : ''}
+  </div>`;
+}
+
 /* ── בדיקת שבת 20:00 לתזכורת סיכום ── */
 function checkWeeklySummaryNotification() {
   const now = new Date();
@@ -1426,8 +1683,25 @@ function checkWeeklySummaryNotification() {
 setInterval(checkWeeklySummaryNotification, 60000);
 checkWeeklySummaryNotification();
 
+/* ══════════════════════════════
+   עבודה בלי אינטרנט — Service Worker
+══════════════════════════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW registration failed:', err));
+  });
+}
+
+function updateOnlineStrip() {
+  document.getElementById('offlineStrip').classList.toggle('show', !navigator.onLine);
+}
+window.addEventListener('online', updateOnlineStrip);
+window.addEventListener('offline', updateOnlineStrip);
+updateOnlineStrip();
+
 /* ══ INIT ══ */
 loadSwaps();
+loadCurrent();
 initSetsData();
 switchDay(0);
 </script>
